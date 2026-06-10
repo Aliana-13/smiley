@@ -43,9 +43,10 @@
           </div>
         </div>
 
+        <!-- ВАЖНО: здесь БЕЗ required, чтобы не ломалось в режиме регистрации -->
         <div id="loginFields" hidden>
-          <input id="loginUsername" data-i18n-placeholder="auth.username" placeholder="Имя пользователя" required />
-          <input id="loginPassword" type="password" data-i18n-placeholder="auth.password" placeholder="Пароль" required />
+          <input id="loginUsername" data-i18n-placeholder="auth.username" placeholder="Имя пользователя" />
+          <input id="loginPassword" type="password" data-i18n-placeholder="auth.password" placeholder="Пароль" />
         </div>
 
         <button class="big-btn" type="submit" style="margin-top:8px;" data-i18n="auth.submit">
