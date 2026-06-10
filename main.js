@@ -359,7 +359,7 @@ document.getElementById('search').addEventListener('input', e => {
   });
 });
 
-// ==== Авторизация ====
+// ==== Авторизация / модалка ====
 const authOverlay = document.getElementById('authOverlay');
 const authTabs = document.getElementById('authTabs');
 const tabRegister = document.getElementById('tabRegister');
@@ -417,6 +417,7 @@ btnCloseAuth.addEventListener('click', () => {
   authOverlay.hidden = true;
 });
 
+// вкладки
 tabRegister.addEventListener('click', showRegisterTab);
 tabLogin.addEventListener('click', showLoginTab);
 
@@ -454,11 +455,11 @@ authForm.addEventListener('submit', e => {
     };
 
     users.push(user);
-    saveUsers(users);          // сохраняем всех пользователей [web:57][web:58]
-    setCurrentUser(user);      // делаем текущим [web:97]
+    saveUsers(users);          // сохраняем всех пользователей [web:175][web:177]
+    setCurrentUser(user);      // делаем текущим
     applyUserToUI();
     renderRating();
-    authOverlay.hidden = true;
+    authOverlay.hidden = true; // ЗАКРЫВАЕМ МОДАЛКУ
   } else {
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -478,7 +479,7 @@ authForm.addEventListener('submit', e => {
     setCurrentUser(user);
     applyUserToUI();
     renderRating();
-    authOverlay.hidden = true;
+    authOverlay.hidden = true; // ЗАКРЫВАЕМ МОДАЛКУ
   }
 });
 
