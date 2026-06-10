@@ -1,467 +1,1149 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="stylesheet" href="style.css" />
-<script src="main.js"></script>
-<title>BestFriends — вместе на расстоянии</title>
-<style>
-:root{
---bg: #F7F5F3;
---card: #FFFFFF;
---text: #2F2F2F;
---muted: #7E7E7E;
---accent-pink: #FFC5D3; /* pastel pink */
---accent-blue: #AEC6CF; /* pastel blue */
---accent-beige: #EDE8D0; /* pastel beige */
---glass: rgba(255,255,255,0.6);
---radius: 14px;
---shadow: 0 6px 18px rgba(30,30,30,0.06);
---smooth: cubic-bezier(.2,.9,.3,1);
-}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BestFriends — вместе на расстоянии</title>
 
-/* Theme variants applied to body[data-theme="girls"] or ["boys"] */
-body{
-margin:0;
-font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-background: linear-gradient(180deg,var(--bg), #ffffff);
-color:var(--text);
--webkit-font-smoothing:antialiased;
--moz-osx-font-smoothing:grayscale;
-transition: background-color 350ms var(--smooth), color 350ms var(--smooth);
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-padding:32px;
-}
+  <style>
+    :root {
+      --bg: #F7F5F3;
+      --card: #FFFFFF;
+      --text: #2F2F2F;
+      --muted: #7E7E7E;
+      --accent-pink: #FFC5D3;
+      --accent-blue: #AEC6CF;
+      --accent-beige: #EDE8D0;
+      --glass: rgba(255,255,255,0.6);
+      --radius: 14px;
+      --shadow: 0 6px 18px rgba(30,30,30,0.06);
+      --smooth: cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
 
-/* THEMES */
-body[data-theme="girls"]{
---primary: var(--accent-pink);
---primary-dark: #FFB0C3;
---secondary: var(--accent-beige);
-background: linear-gradient(180deg, #FFF6F8 0%, #FEFBF8 100%);
-}
-body[data-theme="boys"]{
---primary: var(--accent-blue);
---primary-dark: #98B9C6;
---secondary: var(--accent-beige);
-background: linear-gradient(180deg, #F6FBFF 0%, #FEFBF8 100%);
-}
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg), #ffffff);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 350ms var(--smooth), color 350ms var(--smooth);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
 
-/* Layout */
-.app {
-width: 100%;
-max-width:1100px;
-background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8));
-border-radius: calc(var(--radius) + 6px);
-box-shadow: var(--shadow);
-overflow:hidden;
-display:grid;
-grid-template-columns: 320px 1fr;
-gap:24px;
-padding:24px;
-}
+    body[data-theme="girls"] {
+      --primary: var(--accent-pink);
+      --primary-dark: #FFB0C3;
+      --secondary: var(--accent-beige);
+      background: linear-gradient(180deg, #FFF6F8 0%, #FEFBF8 100%);
+    }
 
-/* Sidebar */
-.sidebar{
-padding:18px;
-background: linear-gradient(180deg, var(--glass), rgba(255,255,255,0.65));
-border-radius:12px;
-display:flex;
-flex-direction:column;
-gap:14px;
-min-height:420px;
-align-items:stretch;
-}
+    body[data-theme="boys"] {
+      --primary: var(--accent-blue);
+      --primary-dark: #98B9C6;
+      --secondary: var(--accent-beige);
+      background: linear-gradient(180deg, #F6FBFF 0%, #FEFBF8 100%);
+    }
 
-.brand{
-display:flex;
-gap:12px;
-align-items:center;
-}
-.logo{
-width:56px;height:56px;border-radius:12px;
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-display:flex;align-items:center;justify-content:center;
-color:#fff;font-weight:700;font-size:20px;
-}
-.brand h1{font-size:18px;margin:0;}
-.brand p{margin:0;color:var(--muted);font-size:13px}
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8));
+      border-radius: calc(var(--radius) + 6px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      padding: 24px;
+    }
 
-.toggle-row{display:flex;gap:10px;align-items:center;justify-content:space-between}
-.theme-switch{
-display:flex;gap:8px;align-items:center;
-}
-.switch-btn{
-border:0;padding:8px 12px;border-radius:999px;background:transparent;
-cursor:pointer;font-weight:600;color:var(--muted);
-transition:all 220ms var(--smooth);
-}
-.switch-btn.active{background:rgba(0,0,0,0.06);color:var(--text)}
+    .sidebar {
+      padding: 18px;
+      background: linear-gradient(180deg, var(--glass), rgba(255,255,255,0.65));
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 420px;
+      align-items: stretch;
+    }
 
-/* Menu */
-.menu{display:flex;flex-direction:column;gap:8px;margin-top:6px}
-.menu button{
-display:flex;gap:10px;align-items:center;border:0;padding:10px 12px;border-radius:10px;background:transparent;cursor:pointer;color:var(--text);
-transition:all 200ms var(--smooth);
-}
-.menu button:hover{transform:translateX(6px);background:rgba(0,0,0,0.03)}
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
 
-/* Main content */
-.main{
-padding:18px;
-display:flex;flex-direction:column;gap:16px;
-}
-.top{
-display:flex;justify-content:space-between;align-items:center;gap:12px;
-}
-.search{
-flex:1;display:flex;gap:8px;align-items:center;background:var(--card);padding:10px;border-radius:12px;box-shadow:var(--shadow);
-}
-.search input{border:0;outline:0;background:transparent;font-size:14px;flex:1;padding:6px;color:var(--text)}
+    .logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 20px;
+    }
 
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
-.card{background:var(--card);border-radius:12px;padding:12px;box-shadow:var(--shadow);transition:transform 200ms var(--smooth)}
-.card:hover{transform:translateY(-6px)}
-.card h3{margin:0 0 8px 0;font-size:15px}
-.card p{margin:0;color:var(--muted);font-size:13px}
+    .brand h1 { margin:0; font-size:18px; }
+    .brand p { margin:0; color:var(--muted); font-size:13px; }
 
-/* Profile preview */
-.profile{
-display:flex;gap:12px;align-items:center;
-}
-.avatar{
-width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--secondary));
-display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;
-}
-.profile-info small{display:block;color:var(--muted);font-size:12px}
+    .toggle-row {
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
 
-/* Controls / toggles in content */
-.controls{display:flex;gap:10px;flex-wrap:wrap}
-.pill{
-background:linear-gradient(90deg, rgba(255,255,255,0.7), rgba(255,255,255,0.5));
-border-radius:40px;padding:8px 12px;border:1px solid rgba(0,0,0,0.04);cursor:pointer;font-weight:600;color:var(--muted);
-transition:all 200ms var(--smooth);
-}
-.pill.active{background:linear-gradient(90deg,var(--primary),var(--primary-dark));color:white;border:0;box-shadow:0 6px 16px rgba(0,0,0,0.08)}
+    .theme-switch {
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
 
-/* Responsive */
-@media (max-width:980px){
-.app{grid-template-columns:1fr; padding:18px}
-.cards{grid-template-columns:repeat(2,1fr)}
-}
-@media (max-width:560px){
-.cards{grid-template-columns:1fr}
-.brand h1{font-size:16px}
-}
+    .switch-btn {
+      border:0;
+      padding:8px 12px;
+      border-radius:999px;
+      background:transparent;
+      cursor:pointer;
+      font-weight:600;
+      color:var(--muted);
+      transition:all 220ms var(--smooth);
+    }
 
-/* small helpers */
-.muted{color:var(--muted);font-size:13px}
-.right{margin-left:auto}
-.big-btn{
-background:linear-gradient(90deg,var(--primary),var(--primary-dark));
-border:0;color:white;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer;
-box-shadow:0 8px 20px rgba(0,0,0,0.08);
-}
+    .switch-btn.active {
+      background:rgba(0,0,0,0.06);
+      color:var(--text);
+    }
 
-/* film rating stars */
-.stars{display:inline-flex;gap:6px;align-items:center}
-.star{width:18px;height:18px;border-radius:4px;background:rgba(0,0,0,0.06);display:inline-flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer}
-.star.active{background:var(--primary);color:#fff}
+    .menu {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-top:6px;
+    }
 
-/* notes area */
-.notes{display:flex;flex-direction:column;gap:8px}
-.note-item{padding:10px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(240,240,240,0.6));border:1px solid rgba(0,0,0,0.03)}
-</style>
+    .menu button {
+      display:flex;
+      gap:10px;
+      align-items:center;
+      border:0;
+      padding:10px 12px;
+      border-radius:10px;
+      background:transparent;
+      cursor:pointer;
+      color:var(--text);
+      transition:all 200ms var(--smooth);
+    }
+
+    .menu button:hover {
+      transform:translateX(6px);
+      background:rgba(0,0,0,0.03);
+    }
+
+    .main {
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .top {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+
+    .search {
+      flex:1;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      background:var(--card);
+      padding:10px;
+      border-radius:12px;
+      box-shadow:var(--shadow);
+    }
+
+    .search input {
+      border:0;
+      outline:0;
+      background:transparent;
+      font-size:14px;
+      flex:1;
+      padding:6px;
+      color:var(--text);
+    }
+
+    .cards {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:8px;
+    }
+
+    .card {
+      background:var(--card);
+      border-radius:12px;
+      padding:12px;
+      box-shadow:var(--shadow);
+      transition:transform 200ms var(--smooth);
+    }
+
+    .card:hover {
+      transform:translateY(-6px);
+    }
+
+    .card h3 {
+      margin:0 0 8px;
+      font-size:15px;
+    }
+
+    .card p {
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .profile {
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .avatar {
+      width:64px;
+      height:64px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--primary),var(--secondary));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight:700;
+      font-size:20px;
+      overflow:hidden;
+    }
+
+    .avatar img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      border-radius:inherit;
+    }
+
+    .profile-info small { display:block; color:var(--muted); font-size:12px; }
+
+    .controls {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .pill {
+      background:linear-gradient(90deg, rgba(255,255,255,0.7), rgba(255,255,255,0.5));
+      border-radius:40px;
+      padding:8px 12px;
+      border:1px solid rgba(0,0,0,0.04);
+      cursor:pointer;
+      font-weight:600;
+      color:var(--muted);
+      transition:all 200ms var(--smooth);
+    }
+
+    .pill.active {
+      background:linear-gradient(90deg,var(--primary),var(--primary-dark));
+      color:white;
+      border:0;
+      box-shadow:0 6px 16px rgba(0,0,0,0.08);
+    }
+
+    .muted { color:var(--muted); font-size:13px; }
+    .right { margin-left:auto; }
+
+    .big-btn {
+      background:linear-gradient(90deg,var(--primary),var(--primary-dark));
+      border:0;
+      color:white;
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    .stars {
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+    }
+
+    .star {
+      width:18px;
+      height:18px;
+      border-radius:4px;
+      background:rgba(0,0,0,0.06);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      cursor:pointer;
+    }
+
+    .star.active {
+      background:var(--primary);
+      color:#fff;
+    }
+
+    .notes {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .note-item {
+      padding:10px;
+      border-radius:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(240,240,240,0.6));
+      border:1px solid rgba(0,0,0,0.03);
+    }
+
+    /* чат */
+    .chat-box {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height:220px;
+      overflow-y:auto;
+      padding-right:4px;
+    }
+
+    .chat-msg {
+      padding:8px 10px;
+      border-radius:10px;
+      background:rgba(255,255,255,0.9);
+      border:1px solid rgba(0,0,0,0.03);
+      font-size:13px;
+    }
+
+    .chat-meta {
+      font-size:11px;
+      color:var(--muted);
+      margin-bottom:2px;
+    }
+
+    /* простые игры */
+    .game-area {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .guess-input {
+      padding:6px 8px;
+      border-radius:8px;
+      border:1px solid rgba(0,0,0,0.1);
+      width:100%;
+    }
+
+    .ttt-grid {
+      display:grid;
+      grid-template-columns:repeat(3,36px);
+      gap:6px;
+    }
+
+    .ttt-cell {
+      width:36px;
+      height:36px;
+      border-radius:6px;
+      background:rgba(255,255,255,0.8);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    /* панель музыки */
+    .music-bar {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      margin-top:8px;
+    }
+
+    .music-bar input[type="range"] {
+      flex:1;
+    }
+
+    /* модалка регистрации/логина */
+    .overlay {
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.24);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:100;
+    }
+
+    .auth-modal {
+      width:100%;
+      max-width:420px;
+      background:#fff;
+      border-radius:18px;
+      padding:20px 18px 18px;
+      box-shadow:0 16px 40px rgba(0,0,0,0.18);
+    }
+
+    .auth-tabs {
+      display:flex;
+      gap:6px;
+      margin-bottom:12px;
+    }
+
+    .auth-tab {
+      flex:1;
+      border-radius:999px;
+      border:0;
+      padding:8px 0;
+      cursor:pointer;
+      font-weight:600;
+      font-size:13px;
+      background:rgba(0,0,0,0.03);
+    }
+
+    .auth-tab.active {
+      background:linear-gradient(90deg,var(--primary),var(--primary-dark));
+      color:#fff;
+    }
+
+    .auth-form {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      font-size:13px;
+    }
+
+    .auth-form input,
+    .auth-form select {
+      width:100%;
+      padding:6px 8px;
+      border-radius:10px;
+      border:1px solid rgba(0,0,0,0.1);
+      font-size:13px;
+    }
+
+    .auth-row {
+      display:flex;
+      gap:8px;
+    }
+
+    .badge {
+      display:inline-block;
+      padding:2px 6px;
+      border-radius:999px;
+      background:rgba(0,0,0,0.04);
+      font-size:11px;
+      margin-right:4px;
+    }
+
+    @media (max-width:980px) {
+      .app {
+        grid-template-columns:1fr;
+        padding:18px;
+      }
+      .cards {
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media (max-width:560px) {
+      .cards {
+        grid-template-columns:1fr;
+      }
+      .brand h1 { font-size:16px; }
+    }
+  </style>
 </head>
 <body data-theme="girls">
-<div class="app" role="application" aria-label="BestFriends app">
-<aside class="sidebar" aria-label="Меню">
-<div class="brand">
-<div class="logo">BF</div>
-<div>
-<h1>BestFriends</h1>
-<p>Лучшие друзья — вместе на расстоянии</p>
-</div>
-</div>
+  <!-- модалка регистрации/логина -->
+  <div class="overlay" id="authOverlay" hidden>
+    <div class="auth-modal">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabRegister">Регистрация</button>
+        <button class="auth-tab" id="tabLogin">Вход</button>
+      </div>
+      <form class="auth-form" id="authForm">
+        <div id="registerFields">
+          <input id="regUsername" placeholder="Имя пользователя" required />
+          <input id="regPassword" type="password" placeholder="Пароль" required />
+          <select id="regGender">
+            <option value="girls">Я девочка</option>
+            <option value="boys">Я мальчик</option>
+          </select>
+          <input id="regAvatar" placeholder="URL аватарки (по желанию)" />
+          <input id="regPet" placeholder="Имя питомца" />
 
-<div class="toggle-row">
-<div class="theme-switch" aria-hidden="false">
-<button class="switch-btn active" data-theme="girls" id="btnGirls">Девочки</button>
-<button class="switch-btn" data-theme="boys" id="btnBoys">Мальчики</button>
-</div>
-<button class="big-btn" id="btnCreate">+ Create</button>
-</div>
+          <input id="regFavColor" placeholder="Любимый цвет (например, #FFC5D3 или pink)" />
+          <div class="auth-row">
+            <input id="regFavDrink" placeholder="Любимый напиток" />
+            <input id="regFavFood" placeholder="Любимая еда" />
+          </div>
+          <input id="regFavArtist" placeholder="Любимый исполнитель" />
+          <input id="regFavMovies" placeholder="Любимые фильмы/киновселенные" />
 
-<nav class="menu" aria-label="Навигация">
-<button data-section="games">Игры</button>
-<button data-section="discuss">Обсуждения</button>
-<button data-section="watch">Совместный просмотр</button>
-<button data-section="ratings">Оценка фильмов</button>
-<button data-section="notes">Записки</button>
-<button data-section="profiles">Просмотр профиля</button>
-</nav>
+          <div class="music-bar" style="margin-top:4px;">
+            <span>Музыка по умолчанию:</span>
+            <select id="regMusicMood">
+              <option value="lofi">Lo‑fi</option>
+              <option value="calm">Спокойная</option>
+              <option value="none">Без музыки</option>
+            </select>
+          </div>
+        </div>
 
-<div style="margin-top:auto">
-<div style="font-size:13px;color:var(--muted)">Тема: <strong id="currentTheme">Девочки</strong></div>
-</div>
-</aside>
+        <div id="loginFields" hidden>
+          <input id="loginUsername" placeholder="Имя пользователя" required />
+          <input id="loginPassword" type="password" placeholder="Пароль" required />
+        </div>
 
-<main class="main">
-<div class="top">
-<div style="display:flex;gap:12px;align-items:center;flex:1">
-<div class="search" role="search">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#C4C4C4" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="11" cy="11" r="6" stroke="#C4C4C4" stroke-linecap="round" stroke-linejoin="round"></circle></svg>
-<input id="search" placeholder="Поиск друзей, игр, фильмов..." />
-</div>
+        <button class="big-btn" type="submit" style="margin-top:8px;">Продолжить</button>
+      </form>
+    </div>
+  </div>
 
-<div class="profile">
-<div class="avatar" id="myAvatar">M</div>
-<div class="profile-info">
-<strong id="myName">Милана</strong>
-<small id="myStatus">Онлайн - Nizhny Novgorod</small>
-</div>
-</div>
-</div>
+  <div class="app" role="application" aria-label="BestFriends app">
+    <aside class="sidebar" aria-label="Меню">
+      <div class="brand">
+        <div class="logo">BF</div>
+        <div>
+          <h1>BestFriends</h1>
+          <p>Лучшие друзья — вместе на расстоянии</p>
+        </div>
+      </div>
 
-<div style="display:flex;gap:8px;align-items:center">
-<button class="pill" id="toggleOnline">В сети</button>
-<button class="pill right" id="toggleDoNotDisturb">Не беспокоить</button>
-</div>
-</div>
+      <div class="toggle-row">
+        <div class="theme-switch">
+          <button class="switch-btn active" data-theme="girls" id="btnGirls">Девочки</button>
+          <button class="switch-btn" data-theme="boys" id="btnBoys">Мальчики</button>
+        </div>
+        <button class="big-btn" id="btnAccount">Аккаунт</button>
+      </div>
 
-<section class="cards" id="sectionsContainer" aria-live="polite">
-<!-- карточки будут заполняться JS -->
-</section>
+      <nav class="menu" aria-label="Навигация">
+        <button data-section="games">Игры</button>
+        <button data-section="discuss">Обсуждения</button>
+        <button data-section="watch">Совместный просмотр</button>
+        <button data-section="ratings">Оценка фильмов</button>
+        <button data-section="notes">Записки</button>
+        <button data-section="chat">Чат</button>
+        <button data-section="profiles">Профиль друга</button>
+      </nav>
 
-<div style="display:flex;gap:12px;margin-top:12px;align-items:flex-start">
-<div style="flex:1">
-<div class="card">
-<h3>Совместный просмотр</h3>
-<p class="muted">Создавайте комнаты, приглашайте друзей и смотрите фильмы одновременно.</p>
-<div style="margin-top:10px" class="controls">
-<button class="pill" id="createRoom">Создать комнату</button>
-<button class="pill" id="joinRoom">Присоединиться</button>
-<button class="pill" id="watchQueue">Очередь фильмов</button>
-</div>
-</div>
+      <div style="margin-top:auto">
+        <div class="muted">
+          Тема: <strong id="currentTheme">Девочки</strong><br />
+          <span id="userSummary"></span>
+        </div>
+      </div>
+    </aside>
 
-<div class="card" style="margin-top:10px">
-<h3>Записки</h3>
-<div class="notes" id="notesList">
-<div class="note-item">Привет! Это первая совместная записка.</div>
-</div>
-<div style="display:flex;gap:8px;margin-top:8px">
-<input id="noteInput" placeholder="Новая записка..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
-<button class="big-btn" id="addNote">Добавить</button>
-</div>
-</div>
-</div>
+    <main class="main">
+      <div class="top">
+        <div style="display:flex;gap:12px;align-items:center;flex:1">
+          <div class="search" role="search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M21 21l-4.35-4.35" stroke="#C4C4C4" stroke-linecap="round" stroke-linejoin="round"></path>
+              <circle cx="11" cy="11" r="6" stroke="#C4C4C4" stroke-linecap="round" stroke-linejoin="round"></circle>
+            </svg>
+            <input id="search" placeholder="Поиск по карточкам..." />
+          </div>
 
-<div style="width:340px">
-<div class="card">
-<h3>Игры и обсуждения</h3>
-<p class="muted">Набор быстрых переключателей для запуска активностей.</p>
-<div style="margin-top:10px" class="controls" id="activityControls">
-<button class="pill" data-activity="hangman">Виселица</button>
-<button class="pill" data-activity="ttt">Крестики‑нолики</button>
-<button class="pill" data-activity="quiz">Квиз</button>
-<button class="pill" data-activity="chat">Чат</button>
-</div>
-</div>
+          <div class="profile">
+            <div class="avatar" id="myAvatar"><span>M</span></div>
+            <div class="profile-info">
+              <strong id="myName">Гость</strong>
+              <small id="myStatus">Не авторизован</small>
+              <small id="myPet"></small>
+            </div>
+          </div>
+        </div>
 
-<div class="card" style="margin-top:10px">
-<h3>Оценка фильмов</h3>
-<p class="muted">Оцени фильм и посмотри рейтинг друзей.</p>
-<div style="margin-top:10px">
-<div><strong>Фильм: "Суперфрендс"</strong></div>
-<div style="margin-top:8px" class="stars" id="movieStars">
-<div class="star" data-value="1">1</div>
-<div class="star" data-value="2">2</div>
-<div class="star" data-value="3">3</div>
-<div class="star" data-value="4">4</div>
-<div class="star" data-value="5">5</div>
-</div>
-<div style="margin-top:8px" class="muted">Текущий рейтинг: <span id="currentRating">—</span></div>
-</div>
-</div>
-</div>
-</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="pill" id="toggleOnline">В сети</button>
+          <button class="pill right" id="toggleDoNotDisturb">Не беспокоить</button>
+        </div>
+      </div>
 
-</main>
-</div>
+      <section class="cards" id="sectionsContainer" aria-live="polite"></section>
 
-<template id="cardTemplate">
-<div class="card">
-<h3></h3>
-<p class="muted"></p>
-</div>
-</template>
+      <div style="display:flex;gap:12px;margin-top:12px;align-items:flex-start">
+        <div style="flex:1">
+          <div class="card">
+            <h3>Музыка для настроения</h3>
+            <p class="muted">Трек подбирается по твоим музыкальным предпочтениям.</p>
+            <div class="music-bar">
+              <button class="pill" id="musicToggle">▶ Музыка</button>
+              <span>Громкость</span>
+              <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.5" />
+            </div>
+            <audio id="bgMusic" loop>
+              <!-- Подставь сюда свои реальные mp3/ogg -->
+              <source id="bgMusicSrc" src="" type="audio/mpeg" />
+            </audio>
+          </div>
 
-<script>
-// Инициализация темы: localStorage или по умолчанию girls
-const body = document.body;
-const btnGirls = document.getElementById('btnGirls');
-const btnBoys = document.getElementById('btnBoys');
-const currentThemeLabel = document.getElementById('currentTheme');
+          <div class="card" style="margin-top:10px">
+            <h3>Записки</h3>
+            <div class="notes" id="notesList">
+              <div class="note-item">Привет! Это первая совместная записка.</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input id="noteInput" placeholder="Новая записка..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+              <button class="big-btn" id="addNote">Добавить</button>
+            </div>
+          </div>
+        </div>
 
-function applyTheme(t){
-body.setAttribute('data-theme', t);
-if(t === 'girls'){
-btnGirls.classList.add('active');
-btnBoys.classList.remove('active');
-currentThemeLabel.textContent = 'Девочки';
-} else {
-btnBoys.classList.add('active');
-btnGirls.classList.remove('active');
-currentThemeLabel.textContent = 'Мальчики';
-}
-localStorage.setItem('bf_theme', t);
-}
+        <div style="width:340px">
+          <div class="card">
+            <h3>Игры и обсуждения</h3>
+            <p class="muted">Мини‑игры для двоих и небольшой чат.</p>
+            <div class="controls" style="margin-top:10px" id="activityControls">
+              <button class="pill" data-activity="guess">Угадай число</button>
+              <button class="pill" data-activity="ttt">Крестики‑нолики</button>
+            </div>
+            <div class="game-area" id="gameArea" style="margin-top:10px"></div>
+          </div>
 
-// load saved
-const saved = localStorage.getItem('bf_theme') || 'girls';
-applyTheme(saved);
+          <div class="card" style="margin-top:10px">
+            <h3>Оценка фильмов</h3>
+            <p class="muted">Оцени фильм и посмотри рекомендации.</p>
+            <div style="margin-top:10px">
+              <div><strong id="movieTitle">Фильм: "Суперфрендс"</strong></div>
+              <div style="margin-top:8px" class="stars" id="movieStars">
+                <div class="star" data-value="1">1</div>
+                <div class="star" data-value="2">2</div>
+                <div class="star" data-value="3">3</div>
+                <div class="star" data-value="4">4</div>
+                <div class="star" data-value="5">5</div>
+              </div>
+              <div style="margin-top:8px" class="muted">
+                Текущий рейтинг: <span id="currentRating">—</span>
+              </div>
+              <div style="margin-top:8px" class="muted" id="movieRec"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-btnGirls.addEventListener('click', ()=> applyTheme('girls'));
-btnBoys.addEventListener('click', ()=> applyTheme('boys'));
+      <div class="card" style="margin-top:12px;">
+        <h3>Чат</h3>
+        <div class="chat-box" id="chatBox"></div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input id="chatInput" placeholder="Написать сообщение..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+          <button class="big-btn" id="chatSend">Отправить</button>
+        </div>
+      </div>
+    </main>
+  </div>
 
-// Навигация по разделам (в простом виде переключаем карточки)
-const sectionsContainer = document.getElementById('sectionsContainer');
-const cardTemplate = document.getElementById('cardTemplate');
-const menuButtons = document.querySelectorAll('.menu button');
+  <template id="cardTemplate">
+    <div class="card">
+      <h3></h3>
+      <p class="muted"></p>
+    </div>
+  </template>
 
-const sections = {
-games: {title:'Игры', desc:'Выбирайте игру и играйте вместе в реальном времени.'},
-discuss: {title:'Обсуждения', desc:'Создавайте темы и обсуждайте любимые моменты.'},
-watch: {title:'Совместный просмотр', desc:'Комнаты, синхронный плеер и чат.'},
-ratings: {title:'Оценка фильмов', desc:'Ставьте оценки, оставляйте рецензии.'},
-notes: {title:'Записки', desc:'Совместные заметки и списки дел.'},
-profiles: {title:'Профили', desc:'Просматривайте профиль друзей.'}
-};
+  <script>
+    const body = document.body;
+    const btnGirls = document.getElementById('btnGirls');
+    const btnBoys = document.getElementById('btnBoys');
+    const currentThemeLabel = document.getElementById('currentTheme');
+    const userSummary = document.getElementById('userSummary');
 
-function renderSection(key){
-sectionsContainer.innerHTML = '';
-const data = sections[key];
-const tpl = cardTemplate.content.cloneNode(true);
-tpl.querySelector('h3').textContent = data.title;
-tpl.querySelector('p').textContent = data.desc;
-sectionsContainer.appendChild(tpl);
-// дополнительные сниппеты для некоторых разделов:
-if(key === 'profiles'){
-// простая демонстрация списка профилей
-const exampleProfiles = [
-{name:'Аня', city:'Москва', bio:'Любит фильмы и крафт'},
-{name:'Игорь', city:'Санкт-Петербург', bio:'Геймер и кинофил'}
-];
-exampleProfiles.forEach(p=>{
-const card = document.createElement('div'); card.className='card';
-const html = `<div style="display:flex;gap:12px;align-items:center">
-<div style="width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">${p.name.charAt(0)}</div>
-<div><strong>${p.name}</strong><div class="muted">${p.city}</div></div>
-<button class="pill right" data-view="${p.name}">Просмотреть</button>
-</div>
-<p class="muted" style="margin-top:10px">${p.bio}</p>`;
-card.innerHTML = html;
-sectionsContainer.appendChild(card);
-});
-}
-if(key === 'games'){
-const card = document.createElement('div'); card.className='card';
-card.innerHTML = <h3>Быстрые игры</h3><p class="muted">Нажми на игру, чтобы начать (запуск моковой версии).</p>;
-sectionsContainer.appendChild(card);
-}
-}
+    function getUser() {
+      const raw = localStorage.getItem('bf_user');
+      return raw ? JSON.parse(raw) : null;
+    }
 
-menuButtons.forEach(b=>{
-b.addEventListener('click', ()=> renderSection(b.dataset.section));
-});
+    function setUser(user) {
+      localStorage.setItem('bf_user', JSON.stringify(user));
+    }
 
-// стартовая секция
-renderSection('watch');
+    function applyTheme(t) {
+      body.setAttribute('data-theme', t);
+      if (t === 'girls') {
+        btnGirls.classList.add('active');
+        btnBoys.classList.remove('active');
+        currentThemeLabel.textContent = 'Девочки';
+      } else {
+        btnBoys.classList.add('active');
+        btnGirls.classList.remove('active');
+        currentThemeLabel.textContent = 'Мальчики';
+      }
+      localStorage.setItem('bf_theme', t);
+    }
 
-// Пиллы активности
-document.getElementById('activityControls').addEventListener('click', e=>{
-const pill = e.target.closest('.pill');
-if(!pill) return;
-const act = pill.dataset.activity;
-if(!act) return;
-// визуально переключаем active
-document.querySelectorAll('#activityControls .pill').forEach(x=>x.classList.remove('active'));
-pill.classList.add('active');
-// заглушка — открыть модалку или раздел
-alert('Запуск активности: ' + act);
-});
+    function applyUserToUI() {
+      const user = getUser();
+      const myName = document.getElementById('myName');
+      const myStatus = document.getElementById('myStatus');
+      const myPet = document.getElementById('myPet');
+      const avatar = document.getElementById('myAvatar');
 
-// Записки
-const notesList = document.getElementById('notesList');
-const addNoteBtn = document.getElementById('addNote');
-const noteInput = document.getElementById('noteInput');
+      if (!user) {
+        myName.textContent = 'Гость';
+        myStatus.textContent = 'Не авторизован';
+        myPet.textContent = '';
+        avatar.innerHTML = '<span>M</span>';
+        userSummary.textContent = '';
+        return;
+      }
 
-addNoteBtn.addEventListener('click', ()=>{
-const v = noteInput.value.trim();
-if(!v) return;
-const div = document.createElement('div'); div.className='note-item';
-div.textContent = v;
-notesList.prepend(div);
-noteInput.value = '';
-});
+      myName.textContent = user.username;
+      myStatus.textContent = 'Онлайн • персонализация включена';
+      myPet.textContent = user.pet ? 'Питомец: ' + user.pet : '';
 
-// Рейтинг фильма (локально)
-const stars = document.getElementById('movieStars');
-const currentRating = document.getElementById('currentRating');
-let rating = localStorage.getItem('bf_rating') || 0;
-function renderRating(){
-Array.from(stars.children).forEach(s=>{
-const val = Number(s.dataset.value);
-s.classList.toggle('active', val <= rating);
-});
-currentRating.textContent = rating ? rating + '/5' : '—';
-}
-renderRating();
-stars.addEventListener('click', e=>{
-const s = e.target.closest('.star');
-if(!s) return;
-rating = Number(s.dataset.value);
-localStorage.setItem('bf_rating', rating);
-renderRating();
-});
+      if (user.avatar && user.avatar.trim() !== '') {
+        avatar.innerHTML = '<img src="' + user.avatar + '" alt="avatar" />';
+      } else {
+        avatar.innerHTML = '<span>' + (user.username[0] || 'U') + '</span>';
+      }
 
-// Быстрая демонстрация просмотра профиля (мок)
-document.addEventListener('click', e=>{
-const v = e.target.dataset.view;
-if(v){
-alert('Открыт профиль: ' + v + '\n(Здесь можно показать детальную страницу профиля)');
-}
-});
+      const badges = [];
+      if (user.favDrink) badges.push('напиток: ' + user.favDrink);
+      if (user.favFood) badges.push('еда: ' + user.favFood);
+      if (user.favArtist) badges.push('музыка: ' + user.favArtist);
+      if (user.favMovies) badges.push('фильмы: ' + user.favMovies);
+      userSummary.innerHTML = badges.map(b => '<span class="badge">' + b + '</span>').join(' ');
 
-// Статусы и переключатели
-document.getElementById('toggleOnline').addEventListener('click', e=>{
-e.target.classList.toggle('active');
-e.target.textContent = e.target.classList.contains('active') ? 'В сети' : 'Не в сети';
-});
-document.getElementById('toggleDoNotDisturb').addEventListener('click', e=>{
-e.target.classList.toggle('active');
-e.target.textContent = e.target.classList.contains('active') ? 'Не беспокоить' : 'Доступен';
-});
+      if (user.favColor) {
+        document.documentElement.style.setProperty('--accent-pink', user.favColor);
+        document.documentElement.style.setProperty('--accent-blue', user.favColor);
+        if (user.gender) applyTheme(user.gender);
+      } else if (user.gender) {
+        applyTheme(user.gender);
+      }
+    }
 
-// Кнопки верхнего меню (создать комнату/присоединиться)
-document.getElementById('createRoom').addEventListener('click', ()=> alert('Комната создана (мок). Подключите WebRTC для реального стрима).'));
-document.getElementById('joinRoom').addEventListener('click', ()=> alert('Подключение к комнате (мок).'));
-document.getElementById('watchQueue').addEventListener('click', ()=> alert('Открыта очередь фильмов (мок).'));
+    const savedTheme = localStorage.getItem('bf_theme') || 'girls';
+    applyTheme(savedTheme);
+    applyUserToUI();
 
-// Поиск (фильтрация карточек примера)
-document.getElementById('search').addEventListener('input', e=>{
-const q = e.target.value.trim().toLowerCase();
-document.querySelectorAll('.card').forEach(c=>{
-const text = c.textContent.toLowerCase();
-c.style.display = text.includes(q) ? '' : 'none';
-});
-});
-</script>
+    btnGirls.addEventListener('click', () => applyTheme('girls'));
+    btnBoys.addEventListener('click', () => applyTheme('boys'));
+
+    const sectionsContainer = document.getElementById('sectionsContainer');
+    const cardTemplate = document.getElementById('cardTemplate');
+    const menuButtons = document.querySelectorAll('.menu button');
+
+    const sections = {
+      games: { title: 'Игры', desc: 'Выбирайте игру и играйте вместе в реальном времени.' },
+      discuss: { title: 'Обсуждения', desc: 'Темы обсуждений по любимым фильмам и музыке.' },
+      watch: { title: 'Совместный просмотр', desc: 'Комнаты, синхронный плеер и чат.' },
+      ratings: { title: 'Оценка фильмов', desc: 'Ставьте оценки, получайте рекомендации.' },
+      notes: { title: 'Записки', desc: 'Совместные заметки и списки дел.' },
+      chat: { title: 'Чат', desc: 'Общайтесь и делитесь эмоциями.' },
+      profiles: { title: 'Профиль друга', desc: 'Просматривайте профили друзей (демо).' }
+    };
+
+    function renderSection(key) {
+      sectionsContainer.innerHTML = '';
+      const data = sections[key];
+      const tpl = cardTemplate.content.cloneNode(true);
+      tpl.querySelector('h3').textContent = data.title;
+      tpl.querySelector('p').textContent = data.desc;
+      sectionsContainer.appendChild(tpl);
+
+      if (key === 'profiles') {
+        const user = getUser();
+        const likes = user?.favMovies || '';
+        const exampleProfiles = [
+          { name: 'Аня', city: 'Москва', bio: 'Любит фильмы и крафт', movies: 'Marvel, романтика' },
+          { name: 'Игорь', city: 'Санкт-Петербург', bio: 'Геймер и кинофил', movies: 'DC, фантастика' }
+        ];
+        exampleProfiles.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          const match = likes && p.movies.toLowerCase().includes(likes.toLowerCase());
+          card.innerHTML = `
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">${p.name.charAt(0)}</div>
+              <div>
+                <strong>${p.name}</strong>
+                <div class="muted">${p.city}</div>
+                <div class="muted">Фильмы: ${p.movies}</div>
+              </div>
+              <button class="pill right" data-view="${p.name}">Профиль</button>
+            </div>
+            ${match ? '<p class="muted" style="margin-top:8px">Совпадение по киновселенной!</p>' : ''}
+          `;
+          sectionsContainer.appendChild(card);
+        });
+      }
+
+      if (key === 'games') {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h3>Мини‑игры</h3>
+          <p class="muted">Выбирай игру справа в блоке "Игры и обсуждения".</p>
+        `;
+        sectionsContainer.appendChild(card);
+      }
+
+      if (key === 'chat') {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h3>Чат</h3>
+          <p class="muted">Чат находится ниже, используй его для общения.</p>
+        `;
+        sectionsContainer.appendChild(card);
+      }
+    }
+
+    menuButtons.forEach(b => b.addEventListener('click', () => renderSection(b.dataset.section)));
+    renderSection('watch');
+
+    const activityControls = document.getElementById('activityControls');
+    const gameArea = document.getElementById('gameArea');
+
+    function renderGuessGame() {
+      gameArea.innerHTML = `
+        <div class="muted">Компьютер загадал число от 1 до 20. Попробуй угадать!</div>
+        <input class="guess-input" id="guessInput" placeholder="Введи число..." />
+        <button class="pill" id="guessBtn">Проверить</button>
+        <div class="muted" id="guessResult"></div>
+      `;
+      const secret = Math.floor(Math.random() * 20) + 1;
+      document.getElementById('guessBtn').onclick = () => {
+        const val = Number(document.getElementById('guessInput').value);
+        const res = document.getElementById('guessResult');
+        if (!val) {
+          res.textContent = 'Введи число.';
+        } else if (val === secret) {
+          res.textContent = 'Ура! Ты угадал число ' + secret + '!';
+        } else if (val < secret) {
+          res.textContent = 'Мало. Попробуй больше.';
+        } else {
+          res.textContent = 'Много. Попробуй меньше.';
+        }
+      };
+    }
+
+    function renderTTTGame() {
+      gameArea.innerHTML = `
+        <div class="muted">Крестики‑нолики для двух игроков на одном устройстве.</div>
+        <div class="ttt-grid" id="tttGrid"></div>
+        <div class="muted" id="tttStatus">Ход: X</div>
+        <button class="pill" id="tttReset">Сбросить</button>
+      `;
+      const grid = document.getElementById('tttGrid');
+      const status = document.getElementById('tttStatus');
+      const reset = document.getElementById('tttReset');
+
+      let board = Array(9).fill('');
+      let current = 'X';
+      let finished = false;
+
+      function render() {
+        grid.innerHTML = '';
+        board.forEach((val, idx) => {
+          const cell = document.createElement('div');
+          cell.className = 'ttt-cell';
+          cell.textContent = val;
+          cell.addEventListener('click', () => {
+            if (finished || board[idx]) return;
+            board[idx] = current;
+            if (checkWin(current)) {
+              status.textContent = 'Победил: ' + current;
+              finished = true;
+            } else if (board.every(v => v)) {
+              status.textContent = 'Ничья';
+              finished = true;
+            } else {
+              current = current === 'X' ? 'O' : 'X';
+              status.textContent = 'Ход: ' + current;
+            }
+            render();
+          });
+          grid.appendChild(cell);
+        });
+      }
+
+      function checkWin(p) {
+        const winLines = [
+          [0,1,2],[3,4,5],[6,7,8],
+          [0,3,6],[1,4,7],[2,5,8],
+          [0,4,8],[2,4,6]
+        ];
+        return winLines.some(line => line.every(i => board[i] === p));
+      }
+
+      reset.addEventListener('click', () => {
+        board = Array(9).fill('');
+        current = 'X';
+        finished = false;
+        status.textContent = 'Ход: X';
+        render();
+      });
+
+      render();
+    }
+
+    activityControls.addEventListener('click', e => {
+      const pill = e.target.closest('.pill');
+      if (!pill) return;
+      const act = pill.dataset.activity;
+      if (!act) return;
+
+      activityControls.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+      pill.classList.add('active');
+
+      if (act === 'guess') renderGuessGame();
+      if (act === 'ttt') renderTTTGame();
+    });
+
+    const notesList = document.getElementById('notesList');
+    const addNoteBtn = document.getElementById('addNote');
+    const noteInput = document.getElementById('noteInput');
+
+    addNoteBtn.addEventListener('click', () => {
+      const v = noteInput.value.trim();
+      if (!v) return;
+      const div = document.createElement('div');
+      div.className = 'note-item';
+      div.textContent = v;
+      notesList.prepend(div);
+      noteInput.value = '';
+    });
+
+    const stars = document.getElementById('movieStars');
+    const currentRating = document.getElementById('currentRating');
+    const movieRec = document.getElementById('movieRec');
+    let rating = Number(localStorage.getItem('bf_rating')) || 0;
+
+    function renderRating() {
+      Array.from(stars.children).forEach(s => {
+        const val = Number(s.dataset.value);
+        s.classList.toggle('active', val <= rating);
+      });
+      currentRating.textContent = rating ? rating + '/5' : '—';
+      const user = getUser();
+      if (!user || !user.favMovies) {
+        movieRec.textContent = '';
+        return;
+      }
+      if (rating >= 4) {
+        movieRec.textContent = 'Похоже, тебе понравится ещё из вселенной: ' + user.favMovies;
+      } else if (rating === 3) {
+        movieRec.textContent = 'Неплохо. Можно поискать что‑то ещё в стиле ' + user.favMovies + '.';
+      } else if (rating > 0) {
+        movieRec.textContent = 'Окей, попробуем другие фильмы из: ' + user.favMovies + '.';
+      } else {
+        movieRec.textContent = '';
+      }
+    }
+
+    renderRating();
+
+    stars.addEventListener('click', e => {
+      const s = e.target.closest('.star');
+      if (!s) return;
+      rating = Number(s.dataset.value);
+      localStorage.setItem('bf_rating', rating);
+      renderRating();
+    });
+
+    const chatBox = document.getElementById('chatBox');
+    const chatInput = document.getElementById('chatInput');
+    const chatSend = document.getElementById('chatSend');
+
+    function loadChat() {
+      const raw = localStorage.getItem('bf_chat');
+      return raw ? JSON.parse(raw) : [];
+    }
+
+    function saveChat(msgs) {
+      localStorage.setItem('bf_chat', JSON.stringify(msgs));
+    }
+
+    function renderChat() {
+      const msgs = loadChat();
+      chatBox.innerHTML = '';
+      msgs.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'chat-msg';
+        div.innerHTML = '<div class="chat-meta">' +
+          msg.user + ' • ' + msg.time +
+          '</div><div>' + msg.text + '</div>';
+        chatBox.appendChild(div);
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    renderChat();
+
+    chatSend.addEventListener('click', () => {
+      const text = chatInput.value.trim();
+      if (!text) return;
+      const user = getUser();
+      const username = user?.username || 'Гость';
+      const msgs = loadChat();
+      msgs.push({
+        user: username,
+        text,
+        time: new Date().toLocaleTimeString()
+      });
+      saveChat(msgs);
+      chatInput.value = '';
+      renderChat();
+    });
+
+    document.getElementById('toggleOnline').addEventListener('click', e => {
+      e.target.classList.toggle('active');
+      e.target.textContent = e.target.classList.contains('active') ? 'В сети' : 'Не в сети';
+    });
+
+    document.getElementById('toggleDoNotDisturb').addEventListener('click', e => {
+      e.target.classList.toggle('active');
+      e.target.textContent = e.target.classList.contains('active') ? 'Не беспокоить' : 'Доступен';
+    });
+
+    const bgMusic = document.getElementById('bgMusic');
+    const bgMusicSrc = document.getElementById('bgMusicSrc');
+    const musicToggle = document.getElementById('musicToggle');
+    const musicVolume = document.getElementById('musicVolume');
+
+    function applyMusicFromUser() {
+      const user = getUser();
+      let src = '';
+      if (!user || user.musicMood === 'none') {
+        src = '';
+      } else if (user.musicMood === 'lofi') {
+        src = ''; // сюда можно подставить путь к lo-fi треку
+      } else if (user.musicMood === 'calm') {
+        src = ''; // сюда путь к спокойному треку
+      }
+      bgMusicSrc.src = src;
+      bgMusic.load();
+    }
+
+    musicVolume.addEventListener('input', () => {
+      bgMusic.volume = Number(musicVolume.value);
+    });
+
+    musicToggle.addEventListener('click', () => {
+      if (!bgMusicSrc.src) {
+        alert('Музыка не выбрана или не настроен источник.');
+        return;
+      }
+      if (bgMusic.paused) {
+        bgMusic.play();
+        musicToggle.textContent = '⏸ Пауза';
+      } else {
+        bgMusic.pause();
+        musicToggle.textContent = '▶ Музыка';
+      }
+    });
+
+    const searchInput = document.getElementById('search');
+    searchInput.addEventListener('input', e => {
+      const q = e.target.value.trim().toLowerCase();
+      document.querySelectorAll('.card').forEach(c => {
+        const text = c.textContent.toLowerCase();
+        c.style.display = text.includes(q) ? '' : 'none';
+      });
+    });
+
+    document.addEventListener('click', e => {
+      const v = e.target.dataset.view;
+      if (v) {
+        alert('Открыт профиль: ' + v + '\\n(Здесь может быть страница профиля с фото, плейлистом и любимыми фильмами)');
+      }
+    });
+
+    const authOverlay = document.getElementById('authOverlay');
+    const tabRegister = document.getElementById('tabRegister');
+    const tabLogin = document.getElementById('tabLogin');
+    const registerFields = document.getElementById('registerFields');
+    const loginFields = document.getElementById('loginFields');
+    const authForm = document.getElementById('authForm');
+
+    document.getElementById('btnAccount').addEventListener('click', () => {
+      authOverlay.hidden = false;
+    });
+
+    authOverlay.addEventListener('click', e => {
+      if (e.target === authOverlay) authOverlay.hidden = true;
+    });
+
+    tabRegister.addEventListener('click', () => {
+      tabRegister.classList.add('active');
+      tabLogin.classList.remove('active');
+      registerFields.hidden = false;
+      loginFields.hidden = true;
+    });
+
+    tabLogin.addEventListener('click', () => {
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+      registerFields.hidden = true;
+      loginFields.hidden = false;
+    });
+
+    authForm.addEventListener('submit', e => {
+      e.preventDefault();
+      if (!registerFields.hidden) {
+        const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value;
+        if (!username || !password) return;
+        const user = {
+          username,
+          password,
+          gender: document.getElementById('regGender').value,
+          avatar: document.getElementById('regAvatar').value.trim(),
+          pet: document.getElementById('regPet').value.trim(),
+          favColor: document.getElementById('regFavColor').value.trim(),
+          favDrink: document.getElementById('regFavDrink').value.trim(),
+          favFood: document.getElementById('regFavFood').value.trim(),
+          favArtist: document.getElementById('regFavArtist').value.trim(),
+          favMovies: document.getElementById('regFavMovies').value.trim(),
+          musicMood: document.getElementById('regMusicMood').value
+        };
+        setUser(user);
+        applyUserToUI();
+        applyMusicFromUser();
+        authOverlay.hidden = true;
+      } else {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const user = getUser();
+        if (!user || user.username !== username || user.password !== password) {
+          alert('Неверное имя или пароль (данные хранятся только локально).');
+          return;
+        }
+        applyUserToUI();
+        applyMusicFromUser();
+        authOverlay.hidden = true;
+      }
+    });
+
+    applyMusicFromUser();
+  </script>
 </body>
 </html>
