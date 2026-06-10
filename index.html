@@ -1,448 +1,181 @@
-:root {
-  --bg: #f7f4fb;
-  --sidebar-bg: #ffffff;
-  --card-bg: #ffffff;
-  --text-main: #222222;
-  --text-muted: #7a7a7a;
-  --accent-pink: #ffc5d3;
-  --accent-blue: #b4d4ff;
-  --border-soft: rgba(0, 0, 0, 0.06);
-  --radius-lg: 18px;
-  --radius-md: 12px;
-  --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-  background: radial-gradient(circle at top, #ffe7f0, #f3f0ff 40%, #ebf6ff 75%);
-  color: var(--text-main);
-  min-height: 100vh;
-  display: flex;
-}
-
-/* Лейаут */
-
-.app {
-  display: flex;
-  width: 100%;
-  max-width: 1200px;
-  margin: 24px auto;
-  padding: 16px;
-  gap: 16px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: var(--shadow-soft);
-}
-
-/* Сайдбар */
-
-.sidebar {
-  width: 260px;
-  border-radius: 20px;
-  padding: 16px 14px;
-  background: linear-gradient(145deg, #ffe8f3, #e8f1ff);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.brand {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #ff7eb3, #ff758c);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-weight: 700;
-  font-size: 18px;
-}
-
-.brand h1 {
-  font-size: 18px;
-  margin: 0;
-}
-
-.brand p {
-  margin: 2px 0 0;
-  font-size: 12px;
-  color: #885b74;
-}
-
-.toggle-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.theme-switch {
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 999px;
-  padding: 4px;
-  display: flex;
-  gap: 4px;
-  flex: 1;
-}
-
-.switch-btn {
-  flex: 1;
-  border: none;
-  background: transparent;
-  border-radius: 999px;
-  padding: 6px 0;
-  font-size: 12px;
-  cursor: pointer;
-  color: #85546c;
-}
-
-.switch-btn.active {
-  background: #fff;
-  box-shadow: 0 4px 10px rgba(255, 126, 179, 0.25);
-  color: #ff3f7b;
-}
-
-.big-btn {
-  border-radius: 999px;
-  border: none;
-  background: linear-gradient(135deg, #ff7eb3, #ff758c);
-  color: #fff;
-  font-weight: 600;
-  font-size: 12px;
-  padding: 8px 14px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.menu {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.menu button {
-  border-radius: 12px;
-  border: none;
-  padding: 8px 10px;
-  text-align: left;
-  font-size: 13px;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.7);
-  color: #5b4d61;
-}
-
-.menu button:hover {
-  background: #fff;
-}
-
-.muted {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-/* Main */
-
-.main {
-  flex: 1;
-  border-radius: 20px;
-  padding: 16px;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.search {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #f3f4ff;
-}
-
-.search input {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 13px;
-}
-
-.profile {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #ff7eb3, #ff758c);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-weight: 700;
-  font-size: 14px;
-  overflow: hidden;
-}
-
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.profile-info strong {
-  display: block;
-  font-size: 13px;
-}
-
-.profile-info small {
-  display: block;
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.pill {
-  border-radius: 999px;
-  border: none;
-  font-size: 12px;
-  padding: 6px 10px;
-  background: #f3f3ff;
-  color: #5b4d61;
-  cursor: pointer;
-}
-
-.pill.right {
-  background: #ffe3f0;
-}
-
-/* Cards */
-
-.cards {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-
-.card {
-  border-radius: 18px;
-  padding: 12px 12px 14px;
-  background: #ffffff;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
-}
-
-.card h3 {
-  margin: 0 0 4px;
-  font-size: 15px;
-}
-
-/* Notes */
-
-.notes {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 160px;
-  overflow-y: auto;
-}
-
-.note-item {
-  border-radius: 10px;
-  padding: 6px 8px;
-  background: #fff6fb;
-  font-size: 13px;
-}
-
-/* Games */
-
-.controls {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.game-area {
-  min-height: 80px;
-  font-size: 13px;
-}
-
-.guess-input {
-  margin-top: 6px;
-  padding: 6px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--border-soft);
-}
-
-/* Tic-tac-toe */
-
-.ttt-grid {
-  margin-top: 8px;
-  display: grid;
-  grid-template-columns: repeat(3, 32px);
-  gap: 4px;
-}
-
-.ttt-cell {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: #f3f3ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-/* Rating */
-
-.stars {
-  display: flex;
-  gap: 4px;
-}
-
-.star {
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  background: #f3f3ff;
-  font-size: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.star.active {
-  background: #ffd2e3;
-}
-
-/* Chat */
-
-.chat-box {
-  max-height: 200px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.chat-msg {
-  font-size: 13px;
-  border-radius: 10px;
-  padding: 6px 8px;
-  background: #f7f3ff;
-}
-
-.chat-meta {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-/* Overlay / auth */
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 20;
-}
-
-.auth-modal {
-  width: 360px;
-  max-width: calc(100% - 32px);
-  border-radius: 20px;
-  background: #ffffff;
-  padding: 14px 14px 16px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
-}
-
-.auth-tabs {
-  display: flex;
-  gap: 4px;
-  background: #f5f3ff;
-  border-radius: 999px;
-  padding: 4px;
-  margin-bottom: 10px;
-}
-
-.auth-tab {
-  flex: 1;
-  border-radius: 999px;
-  border: none;
-  font-size: 13px;
-  padding: 6px 0;
-  cursor: pointer;
-  background: transparent;
-}
-
-.auth-tab.active {
-  background: #ffffff;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-}
-
-.auth-form input,
-.auth-form select {
-  width: 100%;
-  margin-top: 6px;
-  padding: 7px 9px;
-  border-radius: 10px;
-  border: 1px solid var(--border-soft);
-  font-size: 13px;
-}
-
-.auth-row {
-  display: flex;
-  gap: 6px;
-}
-
-/* Badges */
-
-.badge {
-  display: inline-block;
-  border-radius: 999px;
-  padding: 3px 7px;
-  font-size: 11px;
-  background: #fff2fa;
-  color: #884b6a;
-}
-
-/* Responsive */
-
-@media (max-width: 880px) {
-  .app {
-    flex-direction: column;
-  }
-  .sidebar {
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    overflow-x: auto;
-  }
-}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BestFriends — вместе на расстоянии</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-theme="girls">
+  <!-- Модалка регистрации/входа -->
+  <div class="overlay" id="authOverlay" hidden>
+    <div class="auth-modal">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabRegister">Регистрация</button>
+        <button class="auth-tab" id="tabLogin">Вход</button>
+      </div>
+      <form class="auth-form" id="authForm">
+        <!-- Блок регистрации -->
+        <div id="registerFields">
+          <input id="regUsername" placeholder="Имя пользователя" />
+          <input id="regPassword" type="password" placeholder="Пароль" />
+          <select id="regGender">
+            <option value="girls">Я девочка</option>
+            <option value="boys">Я мальчик</option>
+          </select>
+          <input id="regAvatar" placeholder="URL аватарки (по желанию)" />
+          <input id="regPet" placeholder="Имя питомца" />
+          <input id="regFavColor" placeholder="Любимый цвет (#FFC5D3 или pink)" />
+          <div class="auth-row">
+            <input id="regFavDrink" placeholder="Любимый напиток" />
+            <input id="regFavFood" placeholder="Любимая еда" />
+          </div>
+          <input id="regFavArtist" placeholder="Любимый исполнитель" />
+          <input id="regFavMovies" placeholder="Любимые фильмы/киновселенные" />
+        </div>
+
+        <!-- Блок входа -->
+        <div id="loginFields" hidden>
+          <input id="loginUsername" placeholder="Имя пользователя" />
+          <input id="loginPassword" type="password" placeholder="Пароль" />
+        </div>
+
+        <button class="big-btn" type="submit" style="margin-top:8px;">
+          Продолжить
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="app" role="application" aria-label="BestFriends app">
+    <aside class="sidebar" aria-label="Меню">
+      <div class="brand">
+        <div class="logo">BF</div>
+        <div>
+          <h1>BestFriends</h1>
+          <p>Лучшие друзья — вместе на расстоянии</p>
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <div class="theme-switch">
+          <button class="switch-btn active" data-theme="girls" id="btnGirls">Девочки</button>
+          <button class="switch-btn" data-theme="boys" id="btnBoys">Мальчики</button>
+        </div>
+        <button class="big-btn" id="btnAccount">Аккаунт</button>
+      </div>
+
+      <nav class="menu" aria-label="Навигация">
+        <button data-section="games">Игры</button>
+        <button data-section="discuss">Обсуждения</button>
+        <button data-section="watch">Совместный просмотр</button>
+        <button data-section="ratings">Оценка фильмов</button>
+        <button data-section="notes">Записки</button>
+        <button data-section="chat">Чат</button>
+        <button data-section="profiles">Профиль друга</button>
+      </nav>
+
+      <div style="margin-top:auto">
+        <div class="muted">
+          Тема: <strong id="currentTheme">Девочки</strong><br />
+          <span id="userSummary"></span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="top">
+        <div style="display:flex;gap:12px;align-items:center;flex:1">
+          <div class="search" role="search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M21 21l-4.35-4.35" stroke="#C4C4C4" stroke-linecap="round" stroke-linejoin="round"></path>
+              <circle cx="11" cy="11" r="6" stroke="#C4C4C4" stroke-linecap="round" stroke-linejoin="round"></circle>
+            </svg>
+            <input id="search" placeholder="Поиск по карточкам..." />
+          </div>
+
+          <div class="profile">
+            <div class="avatar" id="myAvatar"><span>M</span></div>
+            <div class="profile-info">
+              <strong id="myName">Гость</strong>
+              <small id="myStatus">Не авторизован</small>
+              <small id="myPet"></small>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="pill" id="toggleOnline">В сети</button>
+          <button class="pill right" id="toggleDoNotDisturb">Не беспокоить</button>
+        </div>
+      </div>
+
+      <section class="cards" id="sectionsContainer" aria-live="polite"></section>
+
+      <div style="display:flex;gap:12px;margin-top:12px;align-items:flex-start">
+        <div style="flex:1">
+          <div class="card">
+            <h3>Записки</h3>
+            <div class="notes" id="notesList">
+              <div class="note-item">Привет! Это первая совместная записка.</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input id="noteInput" placeholder="Новая записка..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+              <button class="big-btn" id="addNote">Добавить</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="width:340px">
+          <div class="card">
+            <h3>Игры и обсуждения</h3>
+            <p class="muted">Мини‑игры для двоих и небольшой чат.</p>
+            <div class="controls" style="margin-top:10px" id="activityControls">
+              <button class="pill" data-activity="guess">Угадай число</button>
+              <button class="pill" data-activity="ttt">Крестики‑нолики</button>
+            </div>
+            <div class="game-area" id="gameArea" style="margin-top:10px"></div>
+          </div>
+
+          <div class="card" style="margin-top:10px">
+            <h3>Оценка фильмов</h3>
+            <p class="muted">Оцени фильм и посмотри рекомендации.</p>
+            <div style="margin-top:10px">
+              <div><strong id="movieTitle">Фильм: "Суперфрендс"</strong></div>
+              <div style="margin-top:8px" class="stars" id="movieStars">
+                <div class="star" data-value="1">1</div>
+                <div class="star" data-value="2">2</div>
+                <div class="star" data-value="3">3</div>
+                <div class="star" data-value="4">4</div>
+                <div class="star" data-value="5">5</div>
+              </div>
+              <div style="margin-top:8px" class="muted">
+                Текущий рейтинг: <span id="currentRating">—</span>
+              </div>
+              <div style="margin-top:8px" class="muted" id="movieRec"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px;">
+        <h3>Чат</h3>
+        <div class="chat-box" id="chatBox"></div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input id="chatInput" placeholder="Написать сообщение..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+          <button class="big-btn" id="chatSend">Отправить</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <template id="cardTemplate">
+    <div class="card">
+      <h3></h3>
+      <p class="muted"></p>
+    </div>
+  </template>
+
+  <script src="main.js"></script>
+</body>
+</html>
