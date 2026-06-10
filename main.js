@@ -25,6 +25,7 @@ const btnGirls = document.getElementById('btnGirls');
 const btnBoys = document.getElementById('btnBoys');
 const currentThemeLabel = document.getElementById('currentTheme');
 const userSummary = document.getElementById('userSummary');
+const btnAccount = document.getElementById('btnAccount');
 
 function applyTheme(theme) {
   body.setAttribute('data-theme', theme);
@@ -53,6 +54,7 @@ function applyUserToUI() {
     myPet.textContent = '';
     avatar.innerHTML = '<span>M</span>';
     userSummary.textContent = '';
+    if (btnAccount) btnAccount.style.display = ''; // показать кнопку, если нет пользователя
     return;
   }
 
@@ -80,6 +82,9 @@ function applyUserToUI() {
   if (user.gender) {
     applyTheme(user.gender);
   }
+
+  // пользователь есть — кнопку "Аккаунт" прячем
+  if (btnAccount) btnAccount.style.display = 'none';
 }
 
 // инициализация
@@ -388,7 +393,9 @@ const registerFields = document.getElementById('registerFields');
 const loginFields = document.getElementById('loginFields');
 const authForm = document.getElementById('authForm');
 
-document.getElementById('btnAccount').addEventListener('click', () => {
+btnAccount.addEventListener('click', () => {
+  const user = getUser();
+  if (user) return; // если уже зарегистрирован/вошёл — не открываем
   authOverlay.hidden = false;
 });
 
@@ -438,10 +445,10 @@ authForm.addEventListener('submit', e => {
       musicMood: document.getElementById('regMusicMood').value
     };
 
-    setUser(user);              // сохраняем в localStorage [web:94][web:97]
-    applyUserToUI();            // обновляем профиль
-    applyMusicFromUser();       // настраиваем музыку
-    authOverlay.hidden = true;  // СКРЫВАЕМ модалку
+    setUser(user);          // сохраняем пользователя [web:94][web:97]
+    applyUserToUI();        // обновляем профиль + скрываем кнопку Аккаунт
+    applyMusicFromUser();   // настраиваем музыку
+    authOverlay.hidden = true; // СКРЫВАЕМ форму после регистрации
   } else {
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -459,7 +466,7 @@ authForm.addEventListener('submit', e => {
 
     applyUserToUI();
     applyMusicFromUser();
-    authOverlay.hidden = true; // тоже скрываем при успешном входе
+    authOverlay.hidden = true;
   }
 });
 
