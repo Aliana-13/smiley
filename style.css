@@ -12,20 +12,16 @@
   --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: radial-gradient(circle at top, #ffe7f0, #f3f0ff 40%, #ebf6ff 75%);
   color: var(--text-main);
   min-height: 100vh;
   display: flex;
 }
-
-/* Лейаут */
 
 .app {
   display: flex;
@@ -38,8 +34,6 @@ body {
   background: rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow-soft);
 }
-
-/* Сайдбар */
 
 .sidebar {
   width: 260px;
@@ -143,16 +137,12 @@ body {
   color: #5b4d61;
 }
 
-.menu button:hover {
-  background: #fff;
-}
+.menu button:hover { background: #fff; }
 
 .muted {
   font-size: 12px;
   color: var(--text-muted);
 }
-
-/* Main */
 
 .main {
   flex: 1;
@@ -236,11 +226,7 @@ body {
   cursor: pointer;
 }
 
-.pill.right {
-  background: #ffe3f0;
-}
-
-/* Cards */
+.pill.right { background: #ffe3f0; }
 
 .cards {
   display: grid;
@@ -261,7 +247,6 @@ body {
 }
 
 /* Notes */
-
 .notes {
   display: flex;
   flex-direction: column;
@@ -278,7 +263,6 @@ body {
 }
 
 /* Games */
-
 .controls {
   display: flex;
   gap: 6px;
@@ -298,7 +282,6 @@ body {
 }
 
 /* Tic-tac-toe */
-
 .ttt-grid {
   margin-top: 8px;
   display: grid;
@@ -318,7 +301,6 @@ body {
 }
 
 /* Rating */
-
 .stars {
   display: flex;
   gap: 4px;
@@ -336,12 +318,9 @@ body {
   cursor: pointer;
 }
 
-.star.active {
-  background: #ffd2e3;
-}
+.star.active { background: #ffd2e3; }
 
 /* Chat */
-
 .chat-box {
   max-height: 200px;
   overflow-y: auto;
@@ -363,7 +342,6 @@ body {
 }
 
 /* Overlay / auth */
-
 .overlay {
   position: fixed;
   inset: 0;
@@ -422,8 +400,6 @@ body {
   gap: 6px;
 }
 
-/* Badges */
-
 .badge {
   display: inline-block;
   border-radius: 999px;
@@ -431,18 +407,4 @@ body {
   font-size: 11px;
   background: #fff2fa;
   color: #884b6a;
-}
-
-/* Responsive */
-
-@media (max-width: 880px) {
-  .app {
-    flex-direction: column;
-  }
-  .sidebar {
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    overflow-x: auto;
-  }
 }
