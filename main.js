@@ -1,11 +1,11 @@
 // Ключи в localStorage
-const STORAGE_USERS = 'bf_users';           // массив всех пользователей
-const STORAGE_CURRENT_USER = 'bf_current';  // текущий пользователь
+const STORAGE_USERS = 'bf_users';
+const STORAGE_CURRENT_USER = 'bf_current';
 const STORAGE_THEME = 'bf_theme';
 const STORAGE_RATING = 'bf_rating';
 const STORAGE_CHAT = 'bf_chat';
 
-// ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ПОЛЬЗОВАТЕЛЕЙ =====
+// ==== Пользователи (localStorage) ====
 function loadUsers() {
   const raw = localStorage.getItem(STORAGE_USERS);
   return raw ? JSON.parse(raw) : [];
@@ -28,7 +28,7 @@ function setCurrentUser(user) {
   }
 }
 
-// ===== ТЕМА И ПРОФИЛЬ В ШАПКЕ =====
+// ==== Тема и профиль в шапке ====
 const body = document.body;
 const btnGirls = document.getElementById('btnGirls');
 const btnBoys = document.getElementById('btnBoys');
@@ -92,14 +92,14 @@ function applyUserToUI() {
   }
 }
 
-// инициализация
+// init
 applyTheme(localStorage.getItem(STORAGE_THEME) || 'girls');
 applyUserToUI();
 
 btnGirls.addEventListener('click', () => applyTheme('girls'));
 btnBoys.addEventListener('click', () => applyTheme('boys'));
 
-// ===== РАЗДЕЛЫ =====
+// ==== Разделы ====
 const sectionsContainer = document.getElementById('sectionsContainer');
 const cardTemplate = document.getElementById('cardTemplate');
 const menuButtons = document.querySelectorAll('.menu button');
@@ -126,7 +126,7 @@ function renderSection(key) {
 menuButtons.forEach(b => b.addEventListener('click', () => renderSection(b.dataset.section)));
 renderSection('watch');
 
-// ===== ИГРЫ =====
+// ==== Игры ====
 const activityControls = document.getElementById('activityControls');
 const gameArea = document.getElementById('gameArea');
 
@@ -234,7 +234,7 @@ activityControls.addEventListener('click', e => {
   if (act === 'ttt') renderTTTGame();
 });
 
-// ===== ЗАПИСКИ =====
+// ==== Записки ====
 const notesList = document.getElementById('notesList');
 const addNoteBtn = document.getElementById('addNote');
 const noteInput = document.getElementById('noteInput');
@@ -249,7 +249,7 @@ addNoteBtn.addEventListener('click', () => {
   noteInput.value = '';
 });
 
-// ===== РЕЙТИНГ =====
+// ==== Рейтинг ====
 const stars = document.getElementById('movieStars');
 const currentRating = document.getElementById('currentRating');
 const movieRec = document.getElementById('movieRec');
@@ -288,7 +288,7 @@ stars.addEventListener('click', e => {
   renderRating();
 });
 
-// ===== ЧАТ =====
+// ==== Чат ====
 const chatBox = document.getElementById('chatBox');
 const chatInput = document.getElementById('chatInput');
 const chatSend = document.getElementById('chatSend');
@@ -339,12 +339,10 @@ chatSend.addEventListener('click', () => {
   renderChat();
 });
 
-// ===== СТАТУСЫ =====
+// ==== Статусы ====
 document.getElementById('toggleOnline').addEventListener('click', e => {
   e.target.classList.toggle('active');
-  e.target.textContent = e.target.classContains = e.target.classList.contains('active')
-    ? 'В сети'
-    : 'Не в сети';
+  e.target.textContent = e.target.classList.contains('active') ? 'В сети' : 'Не в сети';
 });
 
 document.getElementById('toggleDoNotDisturb').addEventListener('click', e => {
@@ -352,7 +350,7 @@ document.getElementById('toggleDoNotDisturb').addEventListener('click', e => {
   e.target.textContent = e.target.classList.contains('active') ? 'Не беспокоить' : 'Доступен';
 });
 
-// ===== ПОИСК =====
+// ==== Поиск ====
 document.getElementById('search').addEventListener('input', e => {
   const q = e.target.value.trim().toLowerCase();
   document.querySelectorAll('.card').forEach(c => {
@@ -361,7 +359,7 @@ document.getElementById('search').addEventListener('input', e => {
   });
 });
 
-// ===== АВТОРИЗАЦИЯ (РЕГИСТРАЦИЯ / ВХОД / ВЫХОД) =====
+// ==== Авторизация ====
 const authOverlay = document.getElementById('authOverlay');
 const authTabs = document.getElementById('authTabs');
 const tabRegister = document.getElementById('tabRegister');
@@ -373,34 +371,7 @@ const profileView = document.getElementById('profileView');
 const profileName = document.getElementById('profileName');
 const profileInfo = document.getElementById('profileInfo');
 const btnLogout = document.getElementById('btnLogout');
-
-// открыть модалку по кнопке "Аккаунт"
-btnAccount.addEventListener('click', () => {
-  const user = getCurrentUser();
-  if (user) {
-    // показываем режим профиля
-    authTabs.hidden = true;
-    authForm.hidden = true;
-    profileView.hidden = false;
-    profileName.textContent = user.username;
-    profileInfo.textContent = user.pet
-      ? 'Питомец: ' + user.pet
-      : 'Ты авторизован. Можно пользоваться всеми фичами!';
-  } else {
-    // показываем режим регистрации/входа
-    authTabs.hidden = false;
-    authForm.hidden = false;
-    profileView.hidden = false;
-    profileView.hidden = true;
-    showRegisterTab();
-  }
-  authOverlay.hidden = false;
-});
-
-// закрытие по клику вне окна
-authOverlay.addEventListener('click', e => {
-  if (e.target === authOverlay) authOverlay.hidden = true;
-});
+const btnCloseAuth = document.getElementById('btnCloseAuth');
 
 function showRegisterTab() {
   tabRegister.classList.add('active');
@@ -416,10 +387,40 @@ function showLoginTab() {
   loginFields.hidden = false;
 }
 
+// открыть по кнопке Аккаунт
+btnAccount.addEventListener('click', () => {
+  const user = getCurrentUser();
+  if (user) {
+    authTabs.hidden = true;
+    authForm.hidden = true;
+    profileView.hidden = false;
+    profileName.textContent = user.username;
+    profileInfo.textContent = user.pet
+      ? 'Питомец: ' + user.pet
+      : 'Ты авторизован. Можно пользоваться всеми фичами!';
+  } else {
+    authTabs.hidden = false;
+    authForm.hidden = false;
+    profileView.hidden = true;
+    showRegisterTab();
+  }
+  authOverlay.hidden = false;
+});
+
+// закрытие по клику вне модалки
+authOverlay.addEventListener('click', e => {
+  if (e.target === authOverlay) authOverlay.hidden = true;
+});
+
+// закрытие по кнопке "Закрыть"
+btnCloseAuth.addEventListener('click', () => {
+  authOverlay.hidden = true;
+});
+
 tabRegister.addEventListener('click', showRegisterTab);
 tabLogin.addEventListener('click', showLoginTab);
 
-// обработка формы
+// submit регистрации/входа
 authForm.addEventListener('submit', e => {
   e.preventDefault();
   const isRegister = !registerFields.hidden;
@@ -453,10 +454,10 @@ authForm.addEventListener('submit', e => {
     };
 
     users.push(user);
-    saveUsers(users);         // сохраняем всех пользователей [web:57][web:58]
-    setCurrentUser(user);     // делаем этого текущим
+    saveUsers(users);          // сохраняем всех пользователей [web:57][web:58]
+    setCurrentUser(user);      // делаем текущим [web:97]
     applyUserToUI();
-    renderRating();           // обновить рекомендации
+    renderRating();
     authOverlay.hidden = true;
   } else {
     const username = document.getElementById('loginUsername').value.trim();
