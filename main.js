@@ -1,218 +1,491 @@
-/* =========================
-   main.js — BestFriends Logic
-   ========================= */
+// Простая "база" пользователя в localStorage [web:57][web:61]
+const STORAGE_USER = 'bf_user';
+const STORAGE_THEME = 'bf_theme';
+const STORAGE_RATING = 'bf_rating';
+const STORAGE_CHAT = 'bf_chat';
 
-(function () {
-  const body = document.body;
-  const btnGirls = document.getElementById('btnGirls');
-  const btnBoys = document.getElementById('btnBoys');
-  const currentThemeLabel = document.getElementById('currentTheme');
+// Задай тут свои реальные mp3
+const MUSIC_SOURCES = {
+  lofi: 'music/lofi.mp3',   // положи файл в папку music
+  calm: 'music/calm.mp3',
+  none: ''
+};
 
-  // --- THEME MANAGEMENT ---
-  function applyTheme(t) {
-    body.setAttribute('data-theme', t);
-    if (t === 'girls') {
-      btnGirls.classList.add('active');
-      btnBoys.classList.remove('active');
-      currentThemeLabel.textContent = 'Девочки';
-    } else {
-      btnBoys.classList.add('active');
-      btnGirls.classList.remove('active');
-      currentThemeLabel.textContent = 'Мальчики';
-    }
-    localStorage.setItem('bf_theme', t);
+function getUser() {
+  const raw = localStorage.getItem(STORAGE_USER);
+  return raw ? JSON.parse(raw) : null;
+}
+
+function setUser(user) {
+  localStorage.setItem(STORAGE_USER, JSON.stringify(user));
+}
+
+// ==== Тема и пользователь ====
+const body = document.body;
+const btnGirls = document.getElementById('btnGirls');
+const btnBoys = document.getElementById('btnBoys');
+const currentThemeLabel = document.getElementById('currentTheme');
+const userSummary = document.getElementById('userSummary');
+
+function applyTheme(theme) {
+  body.setAttribute('data-theme', theme);
+  if (theme === 'girls') {
+    btnGirls.classList.add('active');
+    btnBoys.classList.remove('active');
+    currentThemeLabel.textContent = 'Девочки';
+  } else {
+    btnBoys.classList.add('active');
+    btnGirls.classList.remove('active');
+    currentThemeLabel.textContent = 'Мальчики';
+  }
+  localStorage.setItem(STORAGE_THEME, theme);
+}
+
+function applyUserToUI() {
+  const user = getUser();
+  const myName = document.getElementById('myName');
+  const myStatus = document.getElementById('myStatus');
+  const myPet = document.getElementById('myPet');
+  const avatar = document.getElementById('myAvatar');
+
+  if (!user) {
+    myName.textContent = 'Гость';
+    myStatus.textContent = 'Не авторизован';
+    myPet.textContent = '';
+    avatar.innerHTML = '<span>M</span>';
+    userSummary.textContent = '';
+    return;
   }
 
-  // load saved theme or default to 'girls'
-  const savedTheme = localStorage.getItem('bf_theme') || 'girls';
-  applyTheme(savedTheme);
+  myName.textContent = user.username;
+  myStatus.textContent = 'Онлайн • персонализация включена';
+  myPet.textContent = user.pet ? 'Питомец: ' + user.pet : '';
 
-  if (btnGirls) {
-    btnGirls.addEventListener('click', () => applyTheme('girls'));
+  if (user.avatar && user.avatar.trim() !== '') {
+    avatar.innerHTML = '<img src="' + user.avatar + '" alt="avatar" />';
+  } else {
+    avatar.innerHTML = '<span>' + (user.username[0] || 'U') + '</span>';
   }
-  if (btnBoys) {
-    btnBoys.addEventListener('click', () => applyTheme('boys'));
+
+  const badges = [];
+  if (user.favDrink) badges.push('напиток: ' + user.favDrink);
+  if (user.favFood) badges.push('еда: ' + user.favFood);
+  if (user.favArtist) badges.push('музыка: ' + user.favArtist);
+  if (user.favMovies) badges.push('фильмы: ' + user.favMovies);
+  userSummary.innerHTML = badges.map(b => '<span class="badge">' + b + '</span>').join(' ');
+
+  // адаптация темы под пользователя
+  if (user.favColor) {
+    document.documentElement.style.setProperty('--accent-pink', user.favColor);
+    document.documentElement.style.setProperty('--accent-blue', user.favColor);
   }
+  if (user.gender) {
+    applyTheme(user.gender);
+  }
+}
 
-  // --- NAVIGATION & SECTIONS ---
-  const sectionsContainer = document.getElementById('sectionsContainer');
-  const cardTemplate = document.getElementById('cardTemplate');
-  const menuButtons = document.querySelectorAll('.menu button');
+// инициализация темы
+applyTheme(localStorage.getItem(STORAGE_THEME) || 'girls');
+applyUserToUI();
 
-  const sections = {
-    games: { title: 'Игры', desc: 'Выбирайте игру и играйте вместе в реальном времени.' },
-    discuss: { title: 'Обсуждения', desc: 'Создавайте темы и обсуждайте любимые моменты.' },
-    watch: { title: 'Совместный просмотр', desc: 'Комнаты, синхронный плеер и чат.' },
-    ratings: { title: 'Оценка фильмов', desc: 'Ставьте оценки, оставляйте рецензии.' },
-    notes: { title: 'Записки', desc: 'Совместные заметки и списки дел.' },
-    profiles: { title: 'Профили', desc: 'Просматривайте профиль друзей.' }
-  };
+btnGirls.addEventListener('click', () => applyTheme('girls'));
+btnBoys.addEventListener('click', () => applyTheme('boys'));
 
-  function renderSection(key) {
-    sectionsContainer.innerHTML = '';
-    const data = sections[key];
+// ==== Разделы (cards сверху) ====
+const sectionsContainer = document.getElementById('sectionsContainer');
+const cardTemplate = document.getElementById('cardTemplate');
+const menuButtons = document.querySelectorAll('.menu button');
 
-    const tpl = cardTemplate.content.cloneNode(true);
-    tpl.querySelector('h3').textContent = data.title;
-    tpl.querySelector('p').textContent = data.desc;
-    sectionsContainer.appendChild(tpl);
+const sections = {
+  games: { title: 'Игры', desc: 'Мини‑игры для двоих: угадай число, крестики‑нолики.' },
+  discuss: { title: 'Обсуждения', desc: 'Обсуждайте любимые фильмы, музыку и события.' },
+  watch: { title: 'Совместный просмотр', desc: 'Комнаты, синхронный просмотр и чат (демо).' },
+  ratings: { title: 'Оценка фильмов', desc: 'Ставьте оценки и получайте рекомендации.' },
+  notes: { title: 'Записки', desc: 'Совместные заметки и списки дел.' },
+  chat: { title: 'Чат', desc: 'Общайтесь в нижнем блоке чата.' },
+  profiles: { title: 'Профиль друга', desc: 'Просмотр и рекомендации по вкусам (демо).' }
+};
 
-    // Специфичные для раздела дополнения
-    if (key === 'profiles') {
-      const exampleProfiles = [
-        { name: 'Аня', city: 'Москва', bio: 'Любит фильмы и крафт' },
-        { name: 'Игорь', city: 'Санкт-Петербург', bio: 'Геймер и кинофил' }
-      ];
-      exampleProfiles.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <div style="display:flex;gap:12px;align-items:center">
-            <div style="width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">${p.name.charAt(0)}</div>
-            <div><strong>${p.name}</strong><div class="muted">${p.city}</div></div>
-            <button class="pill right" data-view="${p.name}">Просмотреть</button>
-          </div>
-          <p class="muted" style="margin-top:10px">${p.bio}</p>
-        `;
-        sectionsContainer.appendChild(card);
-      });
-    }
+function renderSection(key) {
+  sectionsContainer.innerHTML = '';
+  const data = sections[key];
+  const tpl = cardTemplate.content.cloneNode(true);
+  tpl.querySelector('h3').textContent = data.title;
+  tpl.querySelector('p').textContent = data.desc;
+  sectionsContainer.appendChild(tpl);
 
-    if (key === 'games') {
+  if (key === 'profiles') {
+    const user = getUser();
+    const likes = user?.favMovies || '';
+    const exampleProfiles = [
+      { name: 'Аня', city: 'Москва', bio: 'Любит фильмы и крафт', movies: 'Marvel, романтика' },
+      { name: 'Игорь', city: 'Санкт-Петербург', bio: 'Геймер и кинофил', movies: 'DC, фантастика' }
+    ];
+    exampleProfiles.forEach(p => {
       const card = document.createElement('div');
       card.className = 'card';
-      card.innerHTML = `<h3>Быстрые игры</h3><p class="muted">Нажми на игру, чтобы начать (запуск моковой версии).</p>`;
+      const match = likes && p.movies.toLowerCase().includes(likes.toLowerCase());
+      card.innerHTML = `
+        <div style="display:flex;gap:12px;align-items:center">
+          <div style="width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">${p.name.charAt(0)}</div>
+          <div>
+            <strong>${p.name}</strong>
+            <div class="muted">${p.city}</div>
+            <div class="muted">Фильмы: ${p.movies}</div>
+          </div>
+          <button class="pill right" data-view="${p.name}">Профиль</button>
+        </div>
+        ${match ? '<p class="muted" style="margin-top:8px">Совпадение по киновселенной!</p>' : ''}
+      `;
       sectionsContainer.appendChild(card);
-    }
-  }
-
-  menuButtons.forEach(b => {
-    b.addEventListener('click', () => renderSection(b.dataset.section));
-  });
-
-  // стартовая секция — совместный просмотр
-  renderSection('watch');
-
-  // --- ACTIVITY PILLS (игры/чат) ---
-  const activityControls = document.getElementById('activityControls');
-  if (activityControls) {
-    activityControls.addEventListener('click', e => {
-      const pill = e.target.closest('.pill');
-      if (!pill) return;
-      const act = pill.dataset.activity;
-      if (!act) return;
-
-      // визуальное переключение active
-      activityControls.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
-      pill.classList.add('active');
-
-      // заглушка — открыть модалку / раздел
-      alert('Запуск активности: ' + act);
     });
   }
+}
 
-  // --- NOTES (совместные записки) ---
-  const notesList = document.getElementById('notesList');
-  const addNoteBtn = document.getElementById('addNote');
-  const noteInput = document.getElementById('noteInput');
+menuButtons.forEach(b => b.addEventListener('click', () => renderSection(b.dataset.section)));
+renderSection('watch');
 
-  if (addNoteBtn && noteInput) {
-    addNoteBtn.addEventListener('click', () => {
-      const v = noteInput.value.trim();
-      if (!v) return;
-      const div = document.createElement('div');
-      div.className = 'note-item';
-      div.textContent = v;
-      notesList.prepend(div);
-      noteInput.value = '';
-    });
-  }
+// ==== Игры (правый верхний блок) ====
+const activityControls = document.getElementById('activityControls');
+const gameArea = document.getElementById('gameArea');
 
-  // --- RATING (оценка фильма 1–5) ---
-  const starsEl = document.getElementById('movieStars');
-  const currentRatingEl = document.getElementById('currentRating');
+function renderGuessGame() {
+  gameArea.innerHTML = `
+    <div class="muted">Компьютер загадал число от 1 до 20. Попробуй угадать!</div>
+    <input class="guess-input" id="guessInput" placeholder="Введи число..." />
+    <button class="pill" id="guessBtn">Проверить</button>
+    <div class="muted" id="guessResult"></div>
+  `;
+  const secret = Math.floor(Math.random() * 20) + 1;
+  const guessBtn = document.getElementById('guessBtn');
+  const guessInput = document.getElementById('guessInput');
+  const guessResult = document.getElementById('guessResult');
 
-  let rating = Number(localStorage.getItem('bf_rating')) || 0;
-
-  function renderRating() {
-    if (!starsEl) return;
-    Array.from(starsEl.children).forEach(s => {
-      const val = Number(s.dataset.value);
-      s.classList.toggle('active', val <= rating);
-    });
-    if (currentRatingEl) {
-      currentRatingEl.textContent = rating ? rating + '/5' : '—';
-    }
-  }
-
-  renderRating();
-
-  if (starsEl) {
-    starsEl.addEventListener('click', e => {
-      const s = e.target.closest('.star');
-      if (!s) return;
-      rating = Number(s.dataset.value);
-      localStorage.setItem('bf_rating', rating);
-      renderRating();
-    });
-  }
-
-  // --- VIEW PROFILE (мок) ---
-  document.addEventListener('click', e => {
-    const v = e.target.dataset.view;
-    if (v) {
-      alert('Открыт профиль: ' + v + '\n(Здесь можно показать детальную страницу профиля)');
+  guessBtn.addEventListener('click', () => {
+    const val = Number(guessInput.value);
+    if (!val) {
+      guessResult.textContent = 'Введи число.';
+    } else if (val === secret) {
+      guessResult.textContent = 'Ура! Ты угадал число ' + secret + '!';
+    } else if (val < secret) {
+      guessResult.textContent = 'Мало. Попробуй больше.';
+    } else {
+      guessResult.textContent = 'Много. Попробуй меньше.';
     }
   });
+}
 
-  // --- STATUS TOGGLES ---
-  const toggleOnline = document.getElementById('toggleOnline');
-  const toggleDoNotDisturb = document.getElementById('toggleDoNotDisturb');
+function renderTTTGame() {
+  gameArea.innerHTML = `
+    <div class="muted">Крестики‑нолики для двух игроков на одном устройстве.</div>
+    <div class="ttt-grid" id="tttGrid"></div>
+    <div class="muted" id="tttStatus">Ход: X</div>
+    <button class="pill" id="tttReset">Сбросить</button>
+  `;
+  const grid = document.getElementById('tttGrid');
+  const status = document.getElementById('tttStatus');
+  const reset = document.getElementById('tttReset');
 
-  if (toggleOnline) {
-    toggleOnline.addEventListener('click', e => {
-      e.target.classList.toggle('active');
-      e.target.textContent = e.target.classList.contains('active') ? 'В сети' : 'Не в сети';
-    });
+  let board = Array(9).fill('');
+  let current = 'X';
+  let finished = false;
+
+  function checkWin(p) {
+    const winLines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+    return winLines.some(line => line.every(i => board[i] === p));
   }
 
-  if (toggleDoNotDisturb) {
-    toggleDoNotDisturb.addEventListener('click', e => {
-      e.target.classList.toggle('active');
-      e.target.textContent = e.target.classList.contains('active') ? 'Не беспокоить' : 'Доступен';
-    });
-  }
-
-  // --- ROOM / QUEUE (мок) ---
-  const createRoomBtn = document.getElementById('createRoom');
-  const joinRoomBtn = document.getElementById('joinRoom');
-  const watchQueueBtn = document.getElementById('watchQueue');
-
-  if (createRoomBtn) {
-    createRoomBtn.addEventListener('click', () => {
-      alert('Комната создана (мок). Подключите WebRTC для реального стрима.');
-    });
-  }
-  if (joinRoomBtn) {
-    joinRoomBtn.addEventListener('click', () => {
-      alert('Подключение к комнате (мок).');
-    });
-  }
-  if (watchQueueBtn) {
-    watchQueueBtn.addEventListener('click', () => {
-      alert('Открыта очередь фильмов (мок).');
-    });
-  }
-
-  // --- SEARCH (фильтрация карточек) ---
-  const searchInput = document.getElementById('search');
-  if (searchInput) {
-    searchInput.addEventListener('input', e => {
-      const q = e.target.value.trim().toLowerCase();
-      document.querySelectorAll('.card').forEach(c => {
-        const text = c.textContent.toLowerCase();
-        c.style.display = text.includes(q) ? '' : 'none';
+  function render() {
+    grid.innerHTML = '';
+    board.forEach((val, idx) => {
+      const cell = document.createElement('div');
+      cell.className = 'ttt-cell';
+      cell.textContent = val;
+      cell.addEventListener('click', () => {
+        if (finished || board[idx]) return;
+        board[idx] = current;
+        if (checkWin(current)) {
+          status.textContent = 'Победил: ' + current;
+          finished = true;
+        } else if (board.every(v => v)) {
+          status.textContent = 'Ничья';
+          finished = true;
+        } else {
+          current = current === 'X' ? 'O' : 'X';
+          status.textContent = 'Ход: ' + current;
+        }
+        render();
       });
+      grid.appendChild(cell);
     });
   }
-})();
+
+  reset.addEventListener('click', () => {
+    board = Array(9).fill('');
+    current = 'X';
+    finished = false;
+    status.textContent = 'Ход: X';
+    render();
+  });
+
+  render();
+}
+
+activityControls.addEventListener('click', e => {
+  const pill = e.target.closest('.pill');
+  if (!pill) return;
+  const act = pill.dataset.activity;
+  if (!act) return;
+
+  activityControls.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+  pill.classList.add('active');
+
+  if (act === 'guess') renderGuessGame();
+  if (act === 'ttt') renderTTTGame();
+});
+
+// ==== Записки ====
+const notesList = document.getElementById('notesList');
+const addNoteBtn = document.getElementById('addNote');
+const noteInput = document.getElementById('noteInput');
+
+addNoteBtn.addEventListener('click', () => {
+  const v = noteInput.value.trim();
+  if (!v) return;
+  const div = document.createElement('div');
+  div.className = 'note-item';
+  div.textContent = v;
+  notesList.prepend(div);
+  noteInput.value = '';
+});
+
+// ==== Оценка фильма + рекомендации ====
+const stars = document.getElementById('movieStars');
+const currentRating = document.getElementById('currentRating');
+const movieRec = document.getElementById('movieRec');
+let rating = Number(localStorage.getItem(STORAGE_RATING)) || 0;
+
+function renderRating() {
+  Array.from(stars.children).forEach(s => {
+    const val = Number(s.dataset.value);
+    s.classList.toggle('active', val <= rating);
+  });
+  currentRating.textContent = rating ? rating + '/5' : '—';
+  const user = getUser();
+  if (!user || !user.favMovies) {
+    movieRec.textContent = '';
+    return;
+  }
+  if (rating >= 4) {
+    movieRec.textContent = 'Похоже, тебе понравится ещё из вселенной: ' + user.favMovies;
+  } else if (rating === 3) {
+    movieRec.textContent = 'Неплохо. Можно поискать что‑то ещё в стиле ' + user.favMovies + '.';
+  } else if (rating > 0) {
+    movieRec.textContent = 'Окей, попробуем другие фильмы из: ' + user.favMovies + '.';
+  } else {
+    movieRec.textContent = '';
+  }
+}
+
+renderRating();
+
+stars.addEventListener('click', e => {
+  const s = e.target.closest('.star');
+  if (!s) return;
+  rating = Number(s.dataset.value);
+  localStorage.setItem(STORAGE_RATING, rating);
+  renderRating();
+});
+
+// ==== Чат (локальный) ====
+const chatBox = document.getElementById('chatBox');
+const chatInput = document.getElementById('chatInput');
+const chatSend = document.getElementById('chatSend');
+
+function loadChat() {
+  const raw = localStorage.getItem(STORAGE_CHAT);
+  return raw ? JSON.parse(raw) : [];
+}
+
+function saveChat(msgs) {
+  localStorage.setItem(STORAGE_CHAT, JSON.stringify(msgs));
+}
+
+function renderChat() {
+  const msgs = loadChat();
+  chatBox.innerHTML = '';
+  msgs.forEach(msg => {
+    const div = document.createElement('div');
+    div.className = 'chat-msg';
+    div.innerHTML =
+      '<div class="chat-meta">' +
+      msg.user +
+      ' • ' +
+      msg.time +
+      '</div><div>' +
+      msg.text +
+      '</div>';
+    chatBox.appendChild(div);
+  });
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+renderChat();
+
+chatSend.addEventListener('click', () => {
+  const text = chatInput.value.trim();
+  if (!text) return;
+  const user = getUser();
+  const username = user?.username || 'Гость';
+  const msgs = loadChat();
+  msgs.push({
+    user: username,
+    text,
+    time: new Date().toLocaleTimeString()
+  });
+  saveChat(msgs);
+  chatInput.value = '';
+  renderChat();
+});
+
+// ==== Статусы ====
+document.getElementById('toggleOnline').addEventListener('click', e => {
+  e.target.classList.toggle('active');
+  e.target.textContent = e.target.classList.contains('active') ? 'В сети' : 'Не в сети';
+});
+
+document.getElementById('toggleDoNotDisturb').addEventListener('click', e => {
+  e.target.classList.toggle('active');
+  e.target.textContent = e.target.classList.contains('active') ? 'Не беспокоить' : 'Доступен';
+});
+
+// ==== Музыка ====
+const bgMusic = document.getElementById('bgMusic');
+const bgMusicSrc = document.getElementById('bgMusicSrc');
+const musicToggle = document.getElementById('musicToggle');
+const musicVolume = document.getElementById('musicVolume');
+
+function applyMusicFromUser() {
+  const user = getUser();
+  const mood = user?.musicMood || 'none';
+  const src = MUSIC_SOURCES[mood] || '';
+  bgMusicSrc.src = src;
+  bgMusic.load();
+}
+
+musicVolume.addEventListener('input', () => {
+  bgMusic.volume = Number(musicVolume.value);
+});
+
+musicToggle.addEventListener('click', () => {
+  if (!bgMusicSrc.src) {
+    alert('Музыка не настроена. Поставь путь к mp3 в main.js.');
+    return;
+  }
+  if (bgMusic.paused) {
+    bgMusic.play();
+    musicToggle.textContent = '⏸ Пауза';
+  } else {
+    bgMusic.pause();
+    musicToggle.textContent = '▶ Музыка';
+  }
+});
+
+// ==== Поиск по карточкам ====
+document.getElementById('search').addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll('.card').forEach(c => {
+    const text = c.textContent.toLowerCase();
+    c.style.display = text.includes(q) ? '' : 'none';
+  });
+});
+
+// ==== Профиль друга (демо) ====
+document.addEventListener('click', e => {
+  const v = e.target.dataset.view;
+  if (v) {
+    alert(
+      'Открыт профиль: ' +
+        v +
+        '\n(Здесь может быть страница профиля с фото, плейлистом и любимыми фильмами)'
+    );
+  }
+});
+
+// ==== Регистрация / Вход ====
+const authOverlay = document.getElementById('authOverlay');
+const tabRegister = document.getElementById('tabRegister');
+const tabLogin = document.getElementById('tabLogin');
+const registerFields = document.getElementById('registerFields');
+const loginFields = document.getElementById('loginFields');
+const authForm = document.getElementById('authForm');
+
+document.getElementById('btnAccount').addEventListener('click', () => {
+  authOverlay.hidden = false;
+});
+
+authOverlay.addEventListener('click', e => {
+  if (e.target === authOverlay) authOverlay.hidden = true;
+});
+
+tabRegister.addEventListener('click', () => {
+  tabRegister.classList.add('active');
+  tabLogin.classList.remove('active');
+  registerFields.hidden = false;
+  loginFields.hidden = true;
+});
+
+tabLogin.addEventListener('click', () => {
+  tabLogin.classList.add('active');
+  tabRegister.classList.remove('active');
+  registerFields.hidden = true;
+  loginFields.hidden = false;
+});
+
+authForm.addEventListener('submit', e => {
+  e.preventDefault();
+  if (!registerFields.hidden) {
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value;
+    if (!username || !password) return;
+    const user = {
+      username,
+      password,
+      gender: document.getElementById('regGender').value,
+      avatar: document.getElementById('regAvatar').value.trim(),
+      pet: document.getElementById('regPet').value.trim(),
+      favColor: document.getElementById('regFavColor').value.trim(),
+      favDrink: document.getElementById('regFavDrink').value.trim(),
+      favFood: document.getElementById('regFavFood').value.trim(),
+      favArtist: document.getElementById('regFavArtist').value.trim(),
+      favMovies: document.getElementById('regFavMovies').value.trim(),
+      musicMood: document.getElementById('regMusicMood').value
+    };
+    setUser(user);
+    applyUserToUI();
+    applyMusicFromUser();
+    authOverlay.hidden = true;
+  } else {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const user = getUser();
+    if (!user || user.username !== username || user.password !== password) {
+      alert('Неверное имя или пароль (данные хранятся только локально).');
+      return;
+    }
+    applyUserToUI();
+    applyMusicFromUser();
+    authOverlay.hidden = true;
+  }
+});
+
+applyMusicFromUser();
