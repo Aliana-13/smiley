@@ -438,10 +438,10 @@ authForm.addEventListener('submit', e => {
       musicMood: document.getElementById('regMusicMood').value
     };
 
-    setUser(user);
-    applyUserToUI();
-    applyMusicFromUser();
-    authOverlay.hidden = true;
+    setUser(user);              // сохраняем в localStorage [web:94][web:97]
+    applyUserToUI();            // обновляем профиль
+    applyMusicFromUser();       // настраиваем музыку
+    authOverlay.hidden = true;  // СКРЫВАЕМ модалку
   } else {
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -459,7 +459,7 @@ authForm.addEventListener('submit', e => {
 
     applyUserToUI();
     applyMusicFromUser();
-    authOverlay.hidden = true;
+    authOverlay.hidden = true; // тоже скрываем при успешном входе
   }
 });
 
