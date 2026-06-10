@@ -1,18 +1,34 @@
-const STORAGE_USER = 'bf_user';
+// Ключи в localStorage
+const STORAGE_USERS = 'bf_users';           // массив всех пользователей
+const STORAGE_CURRENT_USER = 'bf_current';  // текущий пользователь
 const STORAGE_THEME = 'bf_theme';
 const STORAGE_RATING = 'bf_rating';
 const STORAGE_CHAT = 'bf_chat';
 
-function getUser() {
-  const raw = localStorage.getItem(STORAGE_USER);
+// ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ПОЛЬЗОВАТЕЛЕЙ =====
+function loadUsers() {
+  const raw = localStorage.getItem(STORAGE_USERS);
+  return raw ? JSON.parse(raw) : [];
+}
+
+function saveUsers(users) {
+  localStorage.setItem(STORAGE_USERS, JSON.stringify(users));
+}
+
+function getCurrentUser() {
+  const raw = localStorage.getItem(STORAGE_CURRENT_USER);
   return raw ? JSON.parse(raw) : null;
 }
 
-function setUser(user) {
-  localStorage.setItem(STORAGE_USER, JSON.stringify(user));
+function setCurrentUser(user) {
+  if (user) {
+    localStorage.setItem(STORAGE_CURRENT_USER, JSON.stringify(user));
+  } else {
+    localStorage.removeItem(STORAGE_CURRENT_USER);
+  }
 }
 
-// ==== Тема и пользователь ====
+// ===== ТЕМА И ПРОФИЛЬ В ШАПКЕ =====
 const body = document.body;
 const btnGirls = document.getElementById('btnGirls');
 const btnBoys = document.getElementById('btnBoys');
@@ -35,7 +51,7 @@ function applyTheme(theme) {
 }
 
 function applyUserToUI() {
-  const user = getUser();
+  const user = getCurrentUser();
   const myName = document.getElementById('myName');
   const myStatus = document.getElementById('myStatus');
   const myPet = document.getElementById('myPet');
@@ -46,13 +62,12 @@ function applyUserToUI() {
     myStatus.textContent = 'Не авторизован';
     myPet.textContent = '';
     avatar.innerHTML = '<span>M</span>';
-    userSummary.textContent = '';
-    if (btnAccount) btnAccount.style.display = '';
+    userSummary.innerHTML = '';
     return;
   }
 
   myName.textContent = user.username;
-  myStatus.textContent = 'Онлайн • персонализация включена';
+  myStatus.textContent = 'Онлайн';
   myPet.textContent = user.pet ? 'Питомец: ' + user.pet : '';
 
   if (user.avatar && user.avatar.trim() !== '') {
@@ -75,17 +90,16 @@ function applyUserToUI() {
   if (user.gender) {
     applyTheme(user.gender);
   }
-
-  if (btnAccount) btnAccount.style.display = 'none';
 }
 
+// инициализация
 applyTheme(localStorage.getItem(STORAGE_THEME) || 'girls');
 applyUserToUI();
 
 btnGirls.addEventListener('click', () => applyTheme('girls'));
 btnBoys.addEventListener('click', () => applyTheme('boys'));
 
-// ==== Разделы ====
+// ===== РАЗДЕЛЫ =====
 const sectionsContainer = document.getElementById('sectionsContainer');
 const cardTemplate = document.getElementById('cardTemplate');
 const menuButtons = document.querySelectorAll('.menu button');
@@ -112,7 +126,7 @@ function renderSection(key) {
 menuButtons.forEach(b => b.addEventListener('click', () => renderSection(b.dataset.section)));
 renderSection('watch');
 
-// ==== Игры ====
+// ===== ИГРЫ =====
 const activityControls = document.getElementById('activityControls');
 const gameArea = document.getElementById('gameArea');
 
@@ -220,7 +234,7 @@ activityControls.addEventListener('click', e => {
   if (act === 'ttt') renderTTTGame();
 });
 
-// ==== Записки ====
+// ===== ЗАПИСКИ =====
 const notesList = document.getElementById('notesList');
 const addNoteBtn = document.getElementById('addNote');
 const noteInput = document.getElementById('noteInput');
@@ -235,7 +249,7 @@ addNoteBtn.addEventListener('click', () => {
   noteInput.value = '';
 });
 
-// ==== Рейтинг ====
+// ===== РЕЙТИНГ =====
 const stars = document.getElementById('movieStars');
 const currentRating = document.getElementById('currentRating');
 const movieRec = document.getElementById('movieRec');
@@ -247,7 +261,8 @@ function renderRating() {
     s.classList.toggle('active', val <= rating);
   });
   currentRating.textContent = rating ? rating + '/5' : '—';
-  const user = getUser();
+
+  const user = getCurrentUser();
   if (!user || !user.favMovies) {
     movieRec.textContent = '';
     return;
@@ -273,7 +288,7 @@ stars.addEventListener('click', e => {
   renderRating();
 });
 
-// ==== Чат ====
+// ===== ЧАТ =====
 const chatBox = document.getElementById('chatBox');
 const chatInput = document.getElementById('chatInput');
 const chatSend = document.getElementById('chatSend');
@@ -311,7 +326,7 @@ renderChat();
 chatSend.addEventListener('click', () => {
   const text = chatInput.value.trim();
   if (!text) return;
-  const user = getUser();
+  const user = getCurrentUser();
   const username = user?.username || 'Гость';
   const msgs = loadChat();
   msgs.push({
@@ -324,10 +339,12 @@ chatSend.addEventListener('click', () => {
   renderChat();
 });
 
-// ==== Статусы ====
+// ===== СТАТУСЫ =====
 document.getElementById('toggleOnline').addEventListener('click', e => {
   e.target.classList.toggle('active');
-  e.target.textContent = e.target.classList.contains('active') ? 'В сети' : 'Не в сети';
+  e.target.textContent = e.target.classContains = e.target.classList.contains('active')
+    ? 'В сети'
+    : 'Не в сети';
 });
 
 document.getElementById('toggleDoNotDisturb').addEventListener('click', e => {
@@ -335,7 +352,7 @@ document.getElementById('toggleDoNotDisturb').addEventListener('click', e => {
   e.target.textContent = e.target.classList.contains('active') ? 'Не беспокоить' : 'Доступен';
 });
 
-// ==== Поиск ====
+// ===== ПОИСК =====
 document.getElementById('search').addEventListener('input', e => {
   const q = e.target.value.trim().toLowerCase();
   document.querySelectorAll('.card').forEach(c => {
@@ -344,41 +361,67 @@ document.getElementById('search').addEventListener('input', e => {
   });
 });
 
-// ==== Регистрация / вход ====
+// ===== АВТОРИЗАЦИЯ (РЕГИСТРАЦИЯ / ВХОД / ВЫХОД) =====
 const authOverlay = document.getElementById('authOverlay');
+const authTabs = document.getElementById('authTabs');
 const tabRegister = document.getElementById('tabRegister');
 const tabLogin = document.getElementById('tabLogin');
 const registerFields = document.getElementById('registerFields');
 const loginFields = document.getElementById('loginFields');
 const authForm = document.getElementById('authForm');
+const profileView = document.getElementById('profileView');
+const profileName = document.getElementById('profileName');
+const profileInfo = document.getElementById('profileInfo');
+const btnLogout = document.getElementById('btnLogout');
 
+// открыть модалку по кнопке "Аккаунт"
 btnAccount.addEventListener('click', () => {
-  const user = getUser();
-  if (user) return; // уже есть пользователь — не открываем снова
+  const user = getCurrentUser();
+  if (user) {
+    // показываем режим профиля
+    authTabs.hidden = true;
+    authForm.hidden = true;
+    profileView.hidden = false;
+    profileName.textContent = user.username;
+    profileInfo.textContent = user.pet
+      ? 'Питомец: ' + user.pet
+      : 'Ты авторизован. Можно пользоваться всеми фичами!';
+  } else {
+    // показываем режим регистрации/входа
+    authTabs.hidden = false;
+    authForm.hidden = false;
+    profileView.hidden = false;
+    profileView.hidden = true;
+    showRegisterTab();
+  }
   authOverlay.hidden = false;
 });
 
+// закрытие по клику вне окна
 authOverlay.addEventListener('click', e => {
   if (e.target === authOverlay) authOverlay.hidden = true;
 });
 
-tabRegister.addEventListener('click', () => {
+function showRegisterTab() {
   tabRegister.classList.add('active');
   tabLogin.classList.remove('active');
   registerFields.hidden = false;
   loginFields.hidden = true;
-});
+}
 
-tabLogin.addEventListener('click', () => {
+function showLoginTab() {
   tabLogin.classList.add('active');
   tabRegister.classList.remove('active');
   registerFields.hidden = true;
   loginFields.hidden = false;
-});
+}
 
+tabRegister.addEventListener('click', showRegisterTab);
+tabLogin.addEventListener('click', showLoginTab);
+
+// обработка формы
 authForm.addEventListener('submit', e => {
   e.preventDefault();
-
   const isRegister = !registerFields.hidden;
 
   if (isRegister) {
@@ -387,6 +430,12 @@ authForm.addEventListener('submit', e => {
 
     if (!username || !password) {
       alert('Введи имя и пароль.');
+      return;
+    }
+
+    const users = loadUsers();
+    if (users.some(u => u.username === username)) {
+      alert('Пользователь с таким именем уже существует.');
       return;
     }
 
@@ -403,25 +452,39 @@ authForm.addEventListener('submit', e => {
       favMovies: document.getElementById('regFavMovies').value.trim()
     };
 
-    setUser(user);      // сохраняем в localStorage [web:94][web:97]
-    applyUserToUI();    // обновляем профиль, скрываем кнопку "Аккаунт"
-    authOverlay.hidden = true; // закрываем форму
+    users.push(user);
+    saveUsers(users);         // сохраняем всех пользователей [web:57][web:58]
+    setCurrentUser(user);     // делаем этого текущим
+    applyUserToUI();
+    renderRating();           // обновить рекомендации
+    authOverlay.hidden = true;
   } else {
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
-    const user = getUser();
 
     if (!username || !password) {
       alert('Введи имя и пароль.');
       return;
     }
 
-    if (!user || user.username !== username || user.password !== password) {
-      alert('Неверное имя или пароль (данные хранятся только локально).');
+    const users = loadUsers();
+    const user = users.find(u => u.username === username && u.password === password);
+    if (!user) {
+      alert('Неверное имя или пароль.');
       return;
     }
 
+    setCurrentUser(user);
     applyUserToUI();
+    renderRating();
     authOverlay.hidden = true;
   }
+});
+
+// выход
+btnLogout.addEventListener('click', () => {
+  setCurrentUser(null);
+  applyUserToUI();
+  renderRating();
+  authOverlay.hidden = true;
 });
