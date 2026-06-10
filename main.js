@@ -1,12 +1,11 @@
-// Простая "база" пользователя в localStorage [web:57][web:61]
 const STORAGE_USER = 'bf_user';
 const STORAGE_THEME = 'bf_theme';
 const STORAGE_RATING = 'bf_rating';
 const STORAGE_CHAT = 'bf_chat';
 
-// Задай тут свои реальные mp3
+// Задай тут свои реальные mp3 пути [web:59]
 const MUSIC_SOURCES = {
-  lofi: 'music/lofi.mp3',   // положи файл в папку music
+  lofi: 'music/lofi.mp3',
   calm: 'music/calm.mp3',
   none: ''
 };
@@ -74,7 +73,6 @@ function applyUserToUI() {
   if (user.favMovies) badges.push('фильмы: ' + user.favMovies);
   userSummary.innerHTML = badges.map(b => '<span class="badge">' + b + '</span>').join(' ');
 
-  // адаптация темы под пользователя
   if (user.favColor) {
     document.documentElement.style.setProperty('--accent-pink', user.favColor);
     document.documentElement.style.setProperty('--accent-blue', user.favColor);
@@ -84,14 +82,14 @@ function applyUserToUI() {
   }
 }
 
-// инициализация темы
+// инициализация темы и пользователя [web:57][web:61]
 applyTheme(localStorage.getItem(STORAGE_THEME) || 'girls');
 applyUserToUI();
 
 btnGirls.addEventListener('click', () => applyTheme('girls'));
 btnBoys.addEventListener('click', () => applyTheme('boys'));
 
-// ==== Разделы (cards сверху) ====
+// ==== Разделы (верхние карточки) ====
 const sectionsContainer = document.getElementById('sectionsContainer');
 const cardTemplate = document.getElementById('cardTemplate');
 const menuButtons = document.querySelectorAll('.menu button');
@@ -145,7 +143,7 @@ function renderSection(key) {
 menuButtons.forEach(b => b.addEventListener('click', () => renderSection(b.dataset.section)));
 renderSection('watch');
 
-// ==== Игры (правый верхний блок) ====
+// ==== Игры ====
 const activityControls = document.getElementById('activityControls');
 const gameArea = document.getElementById('gameArea');
 
@@ -268,7 +266,7 @@ addNoteBtn.addEventListener('click', () => {
   noteInput.value = '';
 });
 
-// ==== Оценка фильма + рекомендации ====
+// ==== Рейтинг и рекомендации ====
 const stars = document.getElementById('movieStars');
 const currentRating = document.getElementById('currentRating');
 const movieRec = document.getElementById('movieRec');
@@ -306,7 +304,7 @@ stars.addEventListener('click', e => {
   renderRating();
 });
 
-// ==== Чат (локальный) ====
+// ==== Чат ====
 const chatBox = document.getElementById('chatBox');
 const chatInput = document.getElementById('chatInput');
 const chatSend = document.getElementById('chatSend');
@@ -400,7 +398,7 @@ musicToggle.addEventListener('click', () => {
   }
 });
 
-// ==== Поиск по карточкам ====
+// ==== Поиск ====
 document.getElementById('search').addEventListener('input', e => {
   const q = e.target.value.trim().toLowerCase();
   document.querySelectorAll('.card').forEach(c => {
@@ -453,10 +451,17 @@ tabLogin.addEventListener('click', () => {
 
 authForm.addEventListener('submit', e => {
   e.preventDefault();
+
+  // Режим регистрации
   if (!registerFields.hidden) {
     const username = document.getElementById('regUsername').value.trim();
     const password = document.getElementById('regPassword').value;
-    if (!username || !password) return;
+
+    if (!username || !password) {
+      alert('Введи имя и пароль.');
+      return;
+    }
+
     const user = {
       username,
       password,
@@ -470,22 +475,27 @@ authForm.addEventListener('submit', e => {
       favMovies: document.getElementById('regFavMovies').value.trim(),
       musicMood: document.getElementById('regMusicMood').value
     };
+
     setUser(user);
     applyUserToUI();
     applyMusicFromUser();
     authOverlay.hidden = true;
-  } else {
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value;
-    const user = getUser();
-    if (!user || user.username !== username || user.password !== password) {
-      alert('Неверное имя или пароль (данные хранятся только локально).');
-      return;
-    }
-    applyUserToUI();
-    applyMusicFromUser();
-    authOverlay.hidden = true;
+    return;
   }
+
+  // Режим входа
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const user = getUser();
+
+  if (!user || user.username !== username || user.password !== password) {
+    alert('Неверное имя или пароль (данные хранятся только локально).');
+    return;
+  }
+
+  applyUserToUI();
+  applyMusicFromUser();
+  authOverlay.hidden = true;
 });
 
 applyMusicFromUser();
