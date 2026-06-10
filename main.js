@@ -490,3 +490,5 @@ btnLogout.addEventListener('click', () => {
   renderRating();
   authOverlay.hidden = true;
 });
+
+
