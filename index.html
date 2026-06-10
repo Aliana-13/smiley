@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Besties — вместе на расстоянии</title>
 
-  <!-- Иконка сайта (по желанию, положи рядом favicon.png) -->
   <link rel="icon" type="image/png" href="favicon.png" />
-
   <link rel="stylesheet" href="style.css" />
 </head>
 <body data-theme="girls">
@@ -85,13 +83,10 @@
       </div>
 
       <nav class="menu">
-        <button data-section="games">Игры</button>
-        <button data-section="discuss">Обсуждения</button>
-        <button data-section="watch">Совместный просмотр</button>
-        <button data-section="ratings">Оценка фильмов</button>
-        <button data-section="notes">Записки</button>
-        <button data-section="chat">Чат</button>
-        <button data-section="profiles">Профиль друга</button>
+        <button data-view="home">Главная</button>
+        <button data-view="my-profile">Мой профиль</button>
+        <button data-view="games">Игровая страница</button>
+        <button data-view="friend">Профиль друга</button>
       </nav>
 
       <div style="margin-top:auto">
@@ -125,101 +120,175 @@
         </div>
       </div>
 
-      <!-- Кастомная обложка своей страницы -->
-      <div class="card" id="coverCard" style="margin-bottom:10px;">
-        <h3>Моя страница</h3>
-        <p class="muted">Добавь картинку‑обложку для своей странички.</p>
-        <div id="coverPreview" style="margin-top:8px;min-height:80px;border-radius:12px;background:#f3f3ff;display:flex;align-items:center;justify-content:center;color:#999;font-size:13px;">
-          Картинка пока не выбрана
-        </div>
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <input id="coverInput" placeholder="URL картинки..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
-          <button class="big-btn" id="btnSaveCover">Сохранить</button>
-        </div>
-      </div>
-
-      <section class="cards" id="sectionsContainer"></section>
-
-      <div style="display:flex;gap:12px;margin-top:12px;align-items:flex-start">
-        <div style="flex:1">
-          <div class="card">
-            <h3>Записки</h3>
-            <div class="notes" id="notesList">
-              <div class="note-item">Привет! Это первая совместная записка.</div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <input id="noteInput" placeholder="Новая записка..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
-              <button class="big-btn" id="addNote">Добавить</button>
-            </div>
+      <!-- VIEW: Главная -->
+      <div class="view" id="view-home">
+        <!-- Кастомная обложка своей страницы -->
+        <div class="card" id="coverCard" style="margin-bottom:10px;">
+          <h3>Моя страница</h3>
+          <p class="muted">Добавь картинку‑обложку для своей странички.</p>
+          <div id="coverPreview" style="margin-top:8px;min-height:80px;border-radius:12px;background:#f3f3ff;display:flex;align-items:center;justify-content:center;color:#999;font-size:13px;">
+            Картинка пока не выбрана
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <input id="coverInput" placeholder="URL картинки..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+            <button class="big-btn" id="btnSaveCover">Сохранить</button>
           </div>
         </div>
 
-        <div style="width:360px">
-          <div class="card">
-            <h3>Игры и обсуждения</h3>
-            <p class="muted">Мини‑игры для двоих и ссылки на онлайн‑игры.</p>
-            <div class="controls" style="margin-top:10px" id="activityControls">
-              <button class="pill" data-activity="guess">Угадай число</button>
-              <button class="pill" data-activity="ttt">Крестики‑нолики</button>
-            </div>
-            <div class="game-area" id="gameArea" style="margin-top:10px"></div>
+        <section class="cards" id="sectionsContainer"></section>
 
-            <!-- Ссылки на внешние игры и совместный просмотр -->
-            <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
-              <button class="pill" id="btnOpenGames">Играть онлайн (новая вкладка)</button>
-              <button class="pill" id="btnOpenWatch">Смотреть фильм вместе</button>
-            </div>
-          </div>
-
-          <div class="card" style="margin-top:10px">
-            <h3>Оценка фильмов</h3>
-            <p class="muted">Оцени фильм и посмотри рекомендации.</p>
-            <div style="margin-top:10px">
-              <div><strong id="movieTitle">Фильм: "Суперфрендс"</strong></div>
-              <div style="margin-top:8px" class="stars" id="movieStars">
-                <div class="star" data-value="1">1</div>
-                <div class="star" data-value="2">2</div>
-                <div class="star" data-value="3">3</div>
-                <div class="star" data-value="4">4</div>
-                <div class="star" data-value="5">5</div>
+        <div style="display:flex;gap:12px;margin-top:12px;align-items:flex-start">
+          <div style="flex:1">
+            <div class="card">
+              <h3>Записки</h3>
+              <div class="notes" id="notesList">
+                <div class="note-item">Привет! Это первая совместная записка.</div>
               </div>
-              <div style="margin-top:8px" class="muted">
-                Текущий рейтинг: <span id="currentRating">—</span>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <input id="noteInput" placeholder="Новая записка..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+                <button class="big-btn" id="addNote">Добавить</button>
               </div>
-              <div style="margin-top:8px" class="muted" id="movieRec"></div>
+            </div>
+          </div>
+
+          <div style="width:360px">
+            <div class="card">
+              <h3>Игры и обсуждения (мини)</h3>
+              <p class="muted">Мини‑игры и ссылки, отдельная страница игр ниже.</p>
+              <div class="controls" style="margin-top:10px" id="activityControls">
+                <button class="pill" data-activity="guess">Угадай число</button>
+                <button class="pill" data-activity="ttt">Крестики‑нолики</button>
+              </div>
+              <div class="game-area" id="gameArea" style="margin-top:10px"></div>
+
+              <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+                <button class="pill" id="btnOpenGames">Играть онлайн (новая вкладка)</button>
+                <button class="pill" id="btnOpenWatch">Смотреть фильм вместе</button>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:10px;">
+              <h3>Оценка фильмов</h3>
+              <p class="muted">Оцени фильм и посмотри рекомендации.</p>
+              <div style="margin-top:10px">
+                <div><strong id="movieTitle">Фильм: "Суперфрендс"</strong></div>
+                <div style="margin-top:8px" class="stars" id="movieStars">
+                  <div class="star" data-value="1">1</div>
+                  <div class="star" data-value="2">2</div>
+                  <div class="star" data-value="3">3</div>
+                  <div class="star" data-value="4">4</div>
+                  <div class="star" data-value="5">5</div>
+                </div>
+                <div style="margin-top:8px" class="muted">
+                  Текущий рейтинг: <span id="currentRating">—</span>
+                </div>
+                <div style="margin-top:8px" class="muted" id="movieRec"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Профиль друга (кратко + добавление + список) -->
+        <div class="card" style="margin-top:12px;">
+          <h3>Профиль друга</h3>
+          <p class="muted">Добавь друга по нику и посмотри его профиль (локально).</p>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <input id="friendNicknameInput" placeholder="Ник друга..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+            <button class="big-btn" id="btnAddFriend">Добавить друга</button>
+          </div>
+          <div id="friendProfile" style="margin-top:10px;" class="muted"></div>
+
+          <div style="margin-top:10px;">
+            <h4 style="margin:4px 0;">Список друзей</h4>
+            <ul id="friendsList" class="friends-list"></ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <h3>Чат</h3>
+          <div class="chat-box" id="chatBox"></div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <input id="chatInput" placeholder="Написать сообщение..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+            <button class="big-btn" id="chatSend">Отправить</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: Мой профиль (персонализация) -->
+      <div class="view" id="view-my-profile" style="display:none;">
+        <div class="card" id="profilePage">
+          <h3>Мой профиль</h3>
+          <p class="muted">Настрой фон, фото и стикеры. (Сохраняется в этом браузере.)</p>
+
+          <div class="profile-page-layout">
+            <div class="profile-page-preview">
+              <div id="profileBg" class="profile-bg">
+                <div id="profilePhotoPreview" class="profile-photo-preview">Фото</div>
+                <div class="profile-stickers">
+                  <div class="sticker-slot" id="stickerSlot1">Стикер 1</div>
+                  <div class="sticker-slot" id="stickerSlot2">Стикер 2</div>
+                  <div class="sticker-slot" id="stickerSlot3">Стикер 3</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-page-controls">
+              <label class="muted">Фон профиля (URL картинки):</label>
+              <input id="profileBgInput" placeholder="https://..." />
+
+              <label class="muted" style="margin-top:8px;">Главное фото (URL):</label>
+              <input id="profilePhotoInput" placeholder="https://..." />
+
+              <label class="muted" style="margin-top:8px;">Стикеры (URL):</label>
+              <input id="stickerInput1" placeholder="Стикер 1" />
+              <input id="stickerInput2" placeholder="Стикер 2" />
+              <input id="stickerInput3" placeholder="Стикер 3" />
+
+              <button class="big-btn" id="btnSaveProfile" style="margin-top:10px;">
+                Сохранить профиль
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Профиль друга -->
-      <div class="card" style="margin-top:12px;">
-        <h3>Профиль друга</h3>
-        <p class="muted">Добавь друга по нику и посмотри его профиль (локально).</p>
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <input id="friendNicknameInput" placeholder="Ник друга..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
-          <button class="big-btn" id="btnAddFriend">Добавить друга</button>
+      <!-- VIEW: Игровая страница -->
+      <div class="view" id="view-games" style="display:none;">
+        <div class="card">
+          <h3>Игровая страница</h3>
+          <p class="muted">Здесь собраны игры: мини‑игры, онлайн‑игры и ссылки.</p>
+
+          <div class="controls" style="margin-top:10px" id="activityControlsFull">
+            <button class="pill" data-activity="guess">Угадай число</button>
+            <button class="pill" data-activity="ttt">Крестики‑нолики</button>
+          </div>
+          <div class="game-area" id="gameAreaFull" style="margin-top:10px"></div>
+
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+            <button class="pill" id="btnOpenGamesFull">Играть онлайн (новая вкладка)</button>
+            <button class="pill" id="btnOpenWatchFull">Смотреть фильм вместе</button>
+          </div>
         </div>
-        <div id="friendProfile" style="margin-top:10px;" class="muted"></div>
       </div>
 
-      <div class="card" style="margin-top:12px;">
-        <h3>Чат</h3>
-        <div class="chat-box" id="chatBox"></div>
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <input id="chatInput" placeholder="Написать сообщение..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
-          <button class="big-btn" id="chatSend">Отправить</button>
+      <!-- VIEW: Профиль друга (страница) -->
+      <div class="view" id="view-friend" style="display:none;">
+        <div class="card">
+          <h3>Профиль друга</h3>
+          <div id="friendPageContent" class="muted">
+            Выбери друга в списке на главной странице.
+          </div>
         </div>
       </div>
+
+      <template id="cardTemplate">
+        <div class="card">
+          <h3></h3>
+          <p class="muted"></p>
+        </div>
+      </template>
     </main>
   </div>
-
-  <template id="cardTemplate">
-    <div class="card">
-      <h3></h3>
-      <p class="muted"></p>
-    </div>
-  </template>
 
   <script src="main.js"></script>
 </body>
