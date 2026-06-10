@@ -2,14 +2,388 @@ const STORAGE_USER = 'bf_user';
 const STORAGE_THEME = 'bf_theme';
 const STORAGE_RATING = 'bf_rating';
 const STORAGE_CHAT = 'bf_chat';
+const STORAGE_LANG = 'bf_lang';
 
-// Задай тут свои реальные mp3 пути [web:59]
+// Задай свои mp3 пути
 const MUSIC_SOURCES = {
   lofi: 'music/lofi.mp3',
   calm: 'music/calm.mp3',
   none: ''
 };
 
+// ==== I18N ====
+const translations = {
+  ru: {
+    brand: { title: 'BestFriends', subtitle: 'Лучшие друзья — вместе на расстоянии' },
+    theme: { label: 'Тема:', girls: 'Девочки', boys: 'Мальчики' },
+    buttons: { account: 'Аккаунт' },
+    lang: { label: 'Язык:' },
+    menu: {
+      games: 'Игры',
+      discuss: 'Обсуждения',
+      watch: 'Совместный просмотр',
+      ratings: 'Оценка фильмов',
+      notes: 'Записки',
+      chat: 'Чат',
+      profiles: 'Профиль друга'
+    },
+    search: { placeholder: 'Поиск по карточкам...' },
+    status: { online: 'В сети', offline: 'Не в сети', dnd: 'Не беспокоить', available: 'Доступен' },
+    music: {
+      title: 'Музыка для настроения',
+      desc: 'Трек подбирается по твоим музыкальным предпочтениям.',
+      button: '▶ Музыка',
+      pause: '⏸ Пауза',
+      volume: 'Громкость',
+      notSet: 'Музыка не настроена. Поставь путь к mp3 в main.js.'
+    },
+    notes: {
+      title: 'Записки',
+      first: 'Привет! Это первая совместная записка.',
+      placeholder: 'Новая записка...',
+      add: 'Добавить'
+    },
+    gamesBlock: {
+      title: 'Игры и обсуждения',
+      desc: 'Мини‑игры для двоих и небольшой чат.',
+      guess: 'Угадай число',
+      ttt: 'Крестики‑нолики',
+      guessInfo: 'Компьютер загадал число от 1 до 20. Попробуй угадать!',
+      guessPlaceholder: 'Введи число...',
+      guessEmpty: 'Введи число.',
+      guessLow: 'Мало. Попробуй больше.',
+      guessHigh: 'Много. Попробуй меньше.',
+      guessWin: 'Ура! Ты угадал число '
+    },
+    rating: {
+      title: 'Оценка фильмов',
+      desc: 'Оцени фильм и посмотри рекомендации.',
+      movieTitle: 'Фильм: "Суперфрендс"',
+      current: 'Текущий рейтинг:',
+      recHigh: 'Похоже, тебе понравится ещё из вселенной: ',
+      recMid: 'Неплохо. Можно поискать что‑то ещё в стиле ',
+      recLow: 'Окей, попробуем другие фильмы из: '
+    },
+    chat: {
+      title: 'Чат',
+      placeholder: 'Написать сообщение...',
+      send: 'Отправить'
+    },
+    auth: {
+      registerTab: 'Регистрация',
+      loginTab: 'Вход',
+      username: 'Имя пользователя',
+      password: 'Пароль',
+      genderGirl: 'Я девочка',
+      genderBoy: 'Я мальчик',
+      avatar: 'URL аватарки (по желанию)',
+      pet: 'Имя питомца',
+      favColor: 'Любимый цвет (#FFC5D3 или pink)',
+      favDrink: 'Любимый напиток',
+      favFood: 'Любимая еда',
+      favArtist: 'Любимый исполнитель',
+      favMovies: 'Любимые фильмы/киновселенные',
+      musicLabel: 'Музыка:',
+      musicLofi: 'Lo-fi',
+      musicCalm: 'Спокойная',
+      musicNone: 'Без музыки',
+      submit: 'Продолжить',
+      fillNamePass: 'Введи имя и пароль.',
+      wrongCreds: 'Неверное имя или пароль (данные хранятся только локально).'
+    }
+  },
+  en: {
+    brand: { title: 'BestFriends', subtitle: 'Best friends — together at a distance' },
+    theme: { label: 'Theme:', girls: 'Girls', boys: 'Boys' },
+    buttons: { account: 'Account' },
+    lang: { label: 'Language:' },
+    menu: {
+      games: 'Games',
+      discuss: 'Discussions',
+      watch: 'Watch together',
+      ratings: 'Movie rating',
+      notes: 'Notes',
+      chat: 'Chat',
+      profiles: 'Friend profile'
+    },
+    search: { placeholder: 'Search cards...' },
+    status: { online: 'Online', offline: 'Offline', dnd: 'Do not disturb', available: 'Available' },
+    music: {
+      title: 'Mood music',
+      desc: 'Track is picked by your music preferences.',
+      button: '▶ Music',
+      pause: '⏸ Pause',
+      volume: 'Volume',
+      notSet: 'Music is not configured. Set mp3 path in main.js.'
+    },
+    notes: {
+      title: 'Notes',
+      first: 'Hi! This is your first shared note.',
+      placeholder: 'New note...',
+      add: 'Add'
+    },
+    gamesBlock: {
+      title: 'Games & talks',
+      desc: 'Mini-games for two and a small chat.',
+      guess: 'Guess number',
+      ttt: 'Tic-tac-toe',
+      guessInfo: 'Computer picked a number 1–20. Try to guess!',
+      guessPlaceholder: 'Enter a number...',
+      guessEmpty: 'Enter a number.',
+      guessLow: 'Too low. Try higher.',
+      guessHigh: 'Too high. Try lower.',
+      guessWin: 'Yay! You guessed the number '
+    },
+    rating: {
+      title: 'Movie rating',
+      desc: 'Rate the movie and get recommendations.',
+      movieTitle: 'Movie: "Superfriends"',
+      current: 'Current rating:',
+      recHigh: 'You may also like from universe: ',
+      recMid: 'Not bad. Try something in style of ',
+      recLow: 'Okay, let us try other movies from: '
+    },
+    chat: {
+      title: 'Chat',
+      placeholder: 'Type a message...',
+      send: 'Send'
+    },
+    auth: {
+      registerTab: 'Register',
+      loginTab: 'Login',
+      username: 'Username',
+      password: 'Password',
+      genderGirl: 'I am a girl',
+      genderBoy: 'I am a boy',
+      avatar: 'Avatar URL (optional)',
+      pet: 'Pet name',
+      favColor: 'Favorite color (#FFC5D3 or pink)',
+      favDrink: 'Favorite drink',
+      favFood: 'Favorite food',
+      favArtist: 'Favorite artist',
+      favMovies: 'Favorite movies / universes',
+      musicLabel: 'Music:',
+      musicLofi: 'Lo-fi',
+      musicCalm: 'Calm',
+      musicNone: 'No music',
+      submit: 'Continue',
+      fillNamePass: 'Enter username and password.',
+      wrongCreds: 'Wrong username or password (stored only locally).'
+    }
+  },
+  de: {
+    brand: { title: 'BestFriends', subtitle: 'Beste Freunde — auf Distanz zusammen' },
+    theme: { label: 'Thema:', girls: 'Mädchen', boys: 'Jungen' },
+    buttons: { account: 'Konto' },
+    lang: { label: 'Sprache:' },
+    menu: {
+      games: 'Spiele',
+      discuss: 'Diskussionen',
+      watch: 'Gemeinsam schauen',
+      ratings: 'Filmwertung',
+      notes: 'Notizen',
+      chat: 'Chat',
+      profiles: 'Freundprofil'
+    },
+    search: { placeholder: 'Karten durchsuchen...' },
+    status: { online: 'Online', offline: 'Offline', dnd: 'Nicht stören', available: 'Verfügbar' },
+    music: {
+      title: 'Musik für die Stimmung',
+      desc: 'Der Track wird nach deinen Musikvorlieben gewählt.',
+      button: '▶ Musik',
+      pause: '⏸ Pause',
+      volume: 'Lautstärke',
+      notSet: 'Musik ist nicht konfiguriert. MP3-Pfad in main.js setzen.'
+    },
+    notes: {
+      title: 'Notizen',
+      first: 'Hi! Das ist eure erste gemeinsame Notiz.',
+      placeholder: 'Neue Notiz...',
+      add: 'Hinzufügen'
+    },
+    gamesBlock: {
+      title: 'Spiele & Gespräche',
+      desc: 'Mini-Spiele für zwei und ein kleiner Chat.',
+      guess: 'Zahl raten',
+      ttt: 'Tic-Tac-Toe',
+      guessInfo: 'Computer hat eine Zahl 1–20 gewählt. Rate sie!',
+      guessPlaceholder: 'Zahl eingeben...',
+      guessEmpty: 'Gib eine Zahl ein.',
+      guessLow: 'Zu niedrig. Versuche höher.',
+      guessHigh: 'Zu hoch. Versuche niedriger.',
+      guessWin: 'Yeah! Du hast die Zahl geraten '
+    },
+    rating: {
+      title: 'Filmwertung',
+      desc: 'Bewerte den Film und sieh Empfehlungen.',
+      movieTitle: 'Film: "Superfreunde"',
+      current: 'Aktuelle Wertung:',
+      recHigh: 'Dir könnte auch das Universum gefallen: ',
+      recMid: 'Ganz ok. Probiere etwas im Stil von ',
+      recLow: 'Okay, versuchen wir andere Filme aus: '
+    },
+    chat: {
+      title: 'Chat',
+      placeholder: 'Nachricht schreiben...',
+      send: 'Senden'
+    },
+    auth: {
+      registerTab: 'Registrieren',
+      loginTab: 'Anmelden',
+      username: 'Benutzername',
+      password: 'Passwort',
+      genderGirl: 'Ich bin ein Mädchen',
+      genderBoy: 'Ich bin ein Junge',
+      avatar: 'Avatar-URL (optional)',
+      pet: 'Name des Haustiers',
+      favColor: 'Lieblingsfarbe (#FFC5D3 oder pink)',
+      favDrink: 'Lieblingsgetränk',
+      favFood: 'Lieblingsessen',
+      favArtist: 'Lieblingskünstler',
+      favMovies: 'Lieblingsfilme / Universen',
+      musicLabel: 'Musik:',
+      musicLofi: 'Lo-fi',
+      musicCalm: 'Ruhig',
+      musicNone: 'Keine Musik',
+      submit: 'Weiter',
+      fillNamePass: 'Gib Benutzername und Passwort ein.',
+      wrongCreds: 'Falscher Benutzername oder Passwort (nur lokal gespeichert).'
+    }
+  },
+  fr: {
+    brand: { title: 'BestFriends', subtitle: 'Meilleurs amis — ensemble à distance' },
+    theme: { label: 'Thème :', girls: 'Filles', boys: 'Garçons' },
+    buttons: { account: 'Compte' },
+    lang: { label: 'Langue :' },
+    menu: {
+      games: 'Jeux',
+      discuss: 'Discussions',
+      watch: 'Regarder ensemble',
+      ratings: 'Note de films',
+      notes: 'Notes',
+      chat: 'Chat',
+      profiles: 'Profil d’ami'
+    },
+    search: { placeholder: 'Rechercher dans les cartes...' },
+    status: { online: 'En ligne', offline: 'Hors ligne', dnd: 'Ne pas déranger', available: 'Disponible' },
+    music: {
+      title: 'Musique d’ambiance',
+      desc: 'Le morceau est choisi selon tes préférences musicales.',
+      button: '▶ Musique',
+      pause: '⏸ Pause',
+      volume: 'Volume',
+      notSet: 'La musique n’est pas configurée. Mets le chemin mp3 dans main.js.'
+    },
+    notes: {
+      title: 'Notes',
+      first: 'Salut ! Ceci est votre première note partagée.',
+      placeholder: 'Nouvelle note...',
+      add: 'Ajouter'
+    },
+    gamesBlock: {
+      title: 'Jeux & discussions',
+      desc: 'Mini‑jeux pour deux et un petit chat.',
+      guess: 'Devine le nombre',
+      ttt: 'Morpion',
+      guessInfo: 'L’ordinateur a choisi un nombre de 1 à 20. Essaie de le deviner !',
+      guessPlaceholder: 'Entre un nombre...',
+      guessEmpty: 'Entre un nombre.',
+      guessLow: 'Trop petit. Essaie plus grand.',
+      guessHigh: 'Trop grand. Essaie plus petit.',
+      guessWin: 'Bravo ! Tu as deviné le nombre '
+    },
+    rating: {
+      title: 'Note de films',
+      desc: 'Note le film et vois des recommandations.',
+      movieTitle: 'Film : "Superfriends"',
+      current: 'Note actuelle :',
+      recHigh: 'Tu aimeras sûrement aussi l’univers : ',
+      recMid: 'Pas mal. Essaie quelque chose dans le style de ',
+      recLow: 'OK, testons d’autres films de : '
+    },
+    chat: {
+      title: 'Chat',
+      placeholder: 'Écrire un message...',
+      send: 'Envoyer'
+    },
+    auth: {
+      registerTab: 'Inscription',
+      loginTab: 'Connexion',
+      username: 'Nom d’utilisateur',
+      password: 'Mot de passe',
+      genderGirl: 'Je suis une fille',
+      genderBoy: 'Je suis un garçon',
+      avatar: 'URL de l’avatar (optionnel)',
+      pet: 'Nom de l’animal',
+      favColor: 'Couleur préférée (#FFC5D3 ou rose)',
+      favDrink: 'Boisson préférée',
+      favFood: 'Plat préféré',
+      favArtist: 'Artiste préféré',
+      favMovies: 'Films / univers préférés',
+      musicLabel: 'Musique :',
+      musicLofi: 'Lo-fi',
+      musicCalm: 'Calme',
+      musicNone: 'Sans musique',
+      submit: 'Continuer',
+      fillNamePass: 'Entre le nom d’utilisateur et le mot de passe.',
+      wrongCreds: 'Nom d’utilisateur ou mot de passe incorrect (stocké uniquement en local).'
+    }
+  }
+};
+
+function t(path) {
+  const lang = localStorage.getItem(STORAGE_LANG) || 'ru';
+  const parts = path.split('.');
+  let obj = translations[lang] || translations.ru;
+  for (const p of parts) {
+    obj = obj?.[p];
+    if (!obj) break;
+  }
+  return obj || '';
+}
+
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const text = t(key);
+    if (text) el.textContent = text;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    const text = t(key);
+    if (text) el.placeholder = text;
+  });
+
+  // обновить динамические надписи статусов и кнопки музыки
+  const themeLabel = document.querySelector('[data-i18n="theme.label"]');
+  if (themeLabel) themeLabel.textContent = t('theme.label');
+  const toggleOnline = document.getElementById('toggleOnline');
+  if (toggleOnline && toggleOnline.classList.contains('active')) {
+    toggleOnline.textContent = t('status.online');
+  } else if (toggleOnline) {
+    toggleOnline.textContent = t('status.online');
+  }
+  const toggleDnd = document.getElementById('toggleDoNotDisturb');
+  if (toggleDnd && toggleDnd.classList.contains('active')) {
+    toggleDnd.textContent = t('status.dnd');
+  } else if (toggleDnd) {
+    toggleDnd.textContent = t('status.dnd');
+  }
+
+  const musicToggle = document.getElementById('musicToggle');
+  if (musicToggle) {
+    musicToggle.textContent = bgMusic.paused ? t('music.button') : t('music.pause');
+  }
+}
+
+function setLanguage(lang) {
+  localStorage.setItem(STORAGE_LANG, lang);
+  const select = document.getElementById('langSelect');
+  if (select) select.value = lang;
+  applyTranslations();
+}
+
+// ==== user/localStorage util ====
 function getUser() {
   const raw = localStorage.getItem(STORAGE_USER);
   return raw ? JSON.parse(raw) : null;
@@ -31,11 +405,11 @@ function applyTheme(theme) {
   if (theme === 'girls') {
     btnGirls.classList.add('active');
     btnBoys.classList.remove('active');
-    currentThemeLabel.textContent = 'Девочки';
+    currentThemeLabel.textContent = t('theme.girls');
   } else {
     btnBoys.classList.add('active');
     btnGirls.classList.remove('active');
-    currentThemeLabel.textContent = 'Мальчики';
+    currentThemeLabel.textContent = t('theme.boys');
   }
   localStorage.setItem(STORAGE_THEME, theme);
 }
@@ -82,31 +456,60 @@ function applyUserToUI() {
   }
 }
 
-// инициализация темы и пользователя [web:57][web:61]
+// инициализация языка, темы, пользователя
+const initialLang = localStorage.getItem(STORAGE_LANG) || 'ru';
+setLanguage(initialLang);
 applyTheme(localStorage.getItem(STORAGE_THEME) || 'girls');
 applyUserToUI();
 
 btnGirls.addEventListener('click', () => applyTheme('girls'));
 btnBoys.addEventListener('click', () => applyTheme('boys'));
 
-// ==== Разделы (верхние карточки) ====
+const langSelect = document.getElementById('langSelect');
+if (langSelect) {
+  langSelect.value = initialLang;
+  langSelect.addEventListener('change', e => setLanguage(e.target.value));
+}
+
+// ==== Разделы ====
 const sectionsContainer = document.getElementById('sectionsContainer');
 const cardTemplate = document.getElementById('cardTemplate');
 const menuButtons = document.querySelectorAll('.menu button');
 
 const sections = {
-  games: { title: 'Игры', desc: 'Мини‑игры для двоих: угадай число, крестики‑нолики.' },
-  discuss: { title: 'Обсуждения', desc: 'Обсуждайте любимые фильмы, музыку и события.' },
-  watch: { title: 'Совместный просмотр', desc: 'Комнаты, синхронный просмотр и чат (демо).' },
-  ratings: { title: 'Оценка фильмов', desc: 'Ставьте оценки и получайте рекомендации.' },
-  notes: { title: 'Записки', desc: 'Совместные заметки и списки дел.' },
-  chat: { title: 'Чат', desc: 'Общайтесь в нижнем блоке чата.' },
-  profiles: { title: 'Профиль друга', desc: 'Просмотр и рекомендации по вкусам (демо).' }
+  games: key => ({
+    title: t('menu.games'),
+    desc: t('gamesBlock.desc')
+  }),
+  discuss: key => ({
+    title: t('menu.discuss'),
+    desc: 'Обсуждайте любимые фильмы, музыку и события.' // можно тоже вынести в словарь
+  }),
+  watch: key => ({
+    title: t('menu.watch'),
+    desc: 'Комнаты, синхронный просмотр и чат (демо).'
+  }),
+  ratings: key => ({
+    title: t('menu.ratings'),
+    desc: t('rating.desc')
+  }),
+  notes: key => ({
+    title: t('menu.notes'),
+    desc: t('notes.title')
+  }),
+  chat: key => ({
+    title: t('menu.chat'),
+    desc: t('chat.title')
+  }),
+  profiles: key => ({
+    title: t('menu.profiles'),
+    desc: 'Просмотр и рекомендации по вкусам (демо).'
+  })
 };
 
 function renderSection(key) {
   sectionsContainer.innerHTML = '';
-  const data = sections[key];
+  const data = sections[key](key);
   const tpl = cardTemplate.content.cloneNode(true);
   tpl.querySelector('h3').textContent = data.title;
   tpl.querySelector('p').textContent = data.desc;
@@ -116,8 +519,8 @@ function renderSection(key) {
     const user = getUser();
     const likes = user?.favMovies || '';
     const exampleProfiles = [
-      { name: 'Аня', city: 'Москва', bio: 'Любит фильмы и крафт', movies: 'Marvel, романтика' },
-      { name: 'Игорь', city: 'Санкт-Петербург', bio: 'Геймер и кинофил', movies: 'DC, фантастика' }
+      { name: 'Аня', city: 'Москва', movies: 'Marvel, романтика' },
+      { name: 'Игорь', city: 'Санкт-Петербург', movies: 'DC, фантастика' }
     ];
     exampleProfiles.forEach(p => {
       const card = document.createElement('div');
@@ -149,9 +552,9 @@ const gameArea = document.getElementById('gameArea');
 
 function renderGuessGame() {
   gameArea.innerHTML = `
-    <div class="muted">Компьютер загадал число от 1 до 20. Попробуй угадать!</div>
-    <input class="guess-input" id="guessInput" placeholder="Введи число..." />
-    <button class="pill" id="guessBtn">Проверить</button>
+    <div class="muted">${t('gamesBlock.guessInfo')}</div>
+    <input class="guess-input" id="guessInput" placeholder="${t('gamesBlock.guessPlaceholder')}" />
+    <button class="pill" id="guessBtn">${t('gamesBlock.guess')}</button>
     <div class="muted" id="guessResult"></div>
   `;
   const secret = Math.floor(Math.random() * 20) + 1;
@@ -162,13 +565,13 @@ function renderGuessGame() {
   guessBtn.addEventListener('click', () => {
     const val = Number(guessInput.value);
     if (!val) {
-      guessResult.textContent = 'Введи число.';
+      guessResult.textContent = t('gamesBlock.guessEmpty');
     } else if (val === secret) {
-      guessResult.textContent = 'Ура! Ты угадал число ' + secret + '!';
+      guessResult.textContent = t('gamesBlock.guessWin') + secret + '!';
     } else if (val < secret) {
-      guessResult.textContent = 'Мало. Попробуй больше.';
+      guessResult.textContent = t('gamesBlock.guessLow');
     } else {
-      guessResult.textContent = 'Много. Попробуй меньше.';
+      guessResult.textContent = t('gamesBlock.guessHigh');
     }
   });
 }
@@ -202,7 +605,7 @@ function renderTTTGame() {
     return winLines.some(line => line.every(i => board[i] === p));
   }
 
-  function render() {
+  function renderGrid() {
     grid.innerHTML = '';
     board.forEach((val, idx) => {
       const cell = document.createElement('div');
@@ -221,7 +624,7 @@ function renderTTTGame() {
           current = current === 'X' ? 'O' : 'X';
           status.textContent = 'Ход: ' + current;
         }
-        render();
+        renderGrid();
       });
       grid.appendChild(cell);
     });
@@ -232,10 +635,10 @@ function renderTTTGame() {
     current = 'X';
     finished = false;
     status.textContent = 'Ход: X';
-    render();
+    renderGrid();
   });
 
-  render();
+  renderGrid();
 }
 
 activityControls.addEventListener('click', e => {
@@ -261,12 +664,12 @@ addNoteBtn.addEventListener('click', () => {
   if (!v) return;
   const div = document.createElement('div');
   div.className = 'note-item';
-  div.textContent = v;
+  div.textContent = v; // текст может быть на любом языке
   notesList.prepend(div);
   noteInput.value = '';
 });
 
-// ==== Рейтинг и рекомендации ====
+// ==== Рейтинг ====
 const stars = document.getElementById('movieStars');
 const currentRating = document.getElementById('currentRating');
 const movieRec = document.getElementById('movieRec');
@@ -284,11 +687,11 @@ function renderRating() {
     return;
   }
   if (rating >= 4) {
-    movieRec.textContent = 'Похоже, тебе понравится ещё из вселенной: ' + user.favMovies;
+    movieRec.textContent = t('rating.recHigh') + user.favMovies;
   } else if (rating === 3) {
-    movieRec.textContent = 'Неплохо. Можно поискать что‑то ещё в стиле ' + user.favMovies + '.';
+    movieRec.textContent = t('rating.recMid') + user.favMovies + '.';
   } else if (rating > 0) {
-    movieRec.textContent = 'Окей, попробуем другие фильмы из: ' + user.favMovies + '.';
+    movieRec.textContent = t('rating.recLow') + user.favMovies + '.';
   } else {
     movieRec.textContent = '';
   }
@@ -343,7 +746,7 @@ chatSend.addEventListener('click', () => {
   const text = chatInput.value.trim();
   if (!text) return;
   const user = getUser();
-  const username = user?.username || 'Гость';
+  const username = user?.username || 'Guest';
   const msgs = loadChat();
   msgs.push({
     user: username,
@@ -358,12 +761,16 @@ chatSend.addEventListener('click', () => {
 // ==== Статусы ====
 document.getElementById('toggleOnline').addEventListener('click', e => {
   e.target.classList.toggle('active');
-  e.target.textContent = e.target.classList.contains('active') ? 'В сети' : 'Не в сети';
+  e.target.textContent = e.target.classList.contains('active')
+    ? t('status.online')
+    : t('status.offline');
 });
 
 document.getElementById('toggleDoNotDisturb').addEventListener('click', e => {
   e.target.classList.toggle('active');
-  e.target.textContent = e.target.classList.contains('active') ? 'Не беспокоить' : 'Доступен';
+  e.target.textContent = e.target.classList.contains('active')
+    ? t('status.dnd')
+    : t('status.available');
 });
 
 // ==== Музыка ====
@@ -386,15 +793,15 @@ musicVolume.addEventListener('input', () => {
 
 musicToggle.addEventListener('click', () => {
   if (!bgMusicSrc.src) {
-    alert('Музыка не настроена. Поставь путь к mp3 в main.js.');
+    alert(t('music.notSet'));
     return;
   }
   if (bgMusic.paused) {
     bgMusic.play();
-    musicToggle.textContent = '⏸ Пауза';
+    musicToggle.textContent = t('music.pause');
   } else {
     bgMusic.pause();
-    musicToggle.textContent = '▶ Музыка';
+    musicToggle.textContent = t('music.button');
   }
 });
 
@@ -452,16 +859,14 @@ tabLogin.addEventListener('click', () => {
 authForm.addEventListener('submit', e => {
   e.preventDefault();
 
-  // Режим регистрации
+  // регистрация
   if (!registerFields.hidden) {
     const username = document.getElementById('regUsername').value.trim();
     const password = document.getElementById('regPassword').value;
-
     if (!username || !password) {
-      alert('Введи имя и пароль.');
+      alert(t('auth.fillNamePass'));
       return;
     }
-
     const user = {
       username,
       password,
@@ -475,7 +880,6 @@ authForm.addEventListener('submit', e => {
       favMovies: document.getElementById('regFavMovies').value.trim(),
       musicMood: document.getElementById('regMusicMood').value
     };
-
     setUser(user);
     applyUserToUI();
     applyMusicFromUser();
@@ -483,13 +887,13 @@ authForm.addEventListener('submit', e => {
     return;
   }
 
-  // Режим входа
+  // вход
   const username = document.getElementById('loginUsername').value.trim();
   const password = document.getElementById('loginPassword').value;
   const user = getUser();
 
   if (!user || user.username !== username || user.password !== password) {
-    alert('Неверное имя или пароль (данные хранятся только локально).');
+    alert(t('auth.wrongCreds'));
     return;
   }
 
@@ -498,4 +902,5 @@ authForm.addEventListener('submit', e => {
   authOverlay.hidden = true;
 });
 
+applyTranslations();
 applyMusicFromUser();
