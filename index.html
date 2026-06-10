@@ -3,362 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Besties — вместе на расстоянии</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f7f4fb;
-      display: flex;
-      min-height: 100vh;
-    }
-    .app {
-      display: flex;
-      width: 100%;
-      max-width: 1200px;
-      margin: 24px auto;
-      padding: 16px;
-      gap: 16px;
-      border-radius: 24px;
-      background: #fff;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-    }
-    .sidebar {
-      width: 260px;
-      border-radius: 20px;
-      padding: 16px 14px;
-      background: linear-gradient(145deg, #ffe8f3, #e8f1ff);
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .brand {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #ff7eb3, #ff758c);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: 18px;
-    }
-    .brand h1 {
-      font-size: 18px;
-      margin: 0;
-    }
-    .brand p {
-      margin: 2px 0 0;
-      font-size: 12px;
-      color: #885b74;
-    }
-    .toggle-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .theme-switch {
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 999px;
-      padding: 4px;
-      display: flex;
-      gap: 4px;
-      flex: 1;
-    }
-    .switch-btn {
-      flex: 1;
-      border: none;
-      background: transparent;
-      border-radius: 999px;
-      padding: 6px 0;
-      font-size: 12px;
-      cursor: pointer;
-      color: #85546c;
-    }
-    .switch-btn.active {
-      background: #fff;
-      box-shadow: 0 4px 10px rgba(255, 126, 179, 0.25);
-      color: #ff3f7b;
-    }
-    .big-btn {
-      border-radius: 999px;
-      border: none;
-      background: linear-gradient(135deg, #ff7eb3, #ff758c);
-      color: #fff;
-      font-weight: 600;
-      font-size: 12px;
-      padding: 8px 14px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .menu {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 8px;
-    }
-    .menu button {
-      border-radius: 12px;
-      border: none;
-      padding: 8px 10px;
-      text-align: left;
-      font-size: 13px;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.7);
-      color: #5b4d61;
-    }
-    .menu button:hover {
-      background: #fff;
-    }
-    .muted {
-      font-size: 12px;
-      color: #7a7a7a;
-    }
-    .main {
-      flex: 1;
-      border-radius: 20px;
-      padding: 16px;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-    .search {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: #f3f4ff;
-    }
-    .search input {
-      flex: 1;
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: 13px;
-    }
-    .profile {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #ff7eb3, #ff758c);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: 14px;
-      overflow: hidden;
-    }
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .profile-info strong {
-      display: block;
-      font-size: 13px;
-    }
-    .profile-info small {
-      display: block;
-      font-size: 11px;
-      color: #7a7a7a;
-    }
-    .pill {
-      border-radius: 999px;
-      border: none;
-      font-size: 12px;
-      padding: 6px 10px;
-      background: #f3f3ff;
-      color: #5b4d61;
-      cursor: pointer;
-    }
-    .pill.right {
-      background: #ffe3f0;
-    }
-    .cards {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-    .card {
-      border-radius: 18px;
-      padding: 12px 12px 14px;
-      background: #ffffff;
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
-    }
-    .card h3 {
-      margin: 0 0 4px;
-      font-size: 15px;
-    }
-    .notes {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-height: 160px;
-      overflow-y: auto;
-    }
-    .note-item {
-      border-radius: 10px;
-      padding: 6px 8px;
-      background: #fff6fb;
-      font-size: 13px;
-    }
-    .controls {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-    .game-area {
-      min-height: 80px;
-      font-size: 13px;
-    }
-    .guess-input {
-      margin-top: 6px;
-      padding: 6px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(0, 0, 0, 0.06);
-    }
-    .ttt-grid {
-      margin-top: 8px;
-      display: grid;
-      grid-template-columns: repeat(3, 32px);
-      gap: 4px;
-    }
-    .ttt-cell {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: #f3f3ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .stars {
-      display: flex;
-      gap: 4px;
-    }
-    .star {
-      width: 24px;
-      height: 24px;
-      border-radius: 999px;
-      background: #f3f3ff;
-      font-size: 11px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .star.active {
-      background: #ffd2e3;
-    }
-    .chat-box {
-      max-height: 200px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .chat-msg {
-      font-size: 13px;
-      border-radius: 10px;
-      padding: 6px 8px;
-      background: #f7f3ff;
-    }
-    .chat-meta {
-      font-size: 11px;
-      color: #7a7a7a;
-    }
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 20;
-    }
-    .auth-modal {
-      width: 360px;
-      max-width: calc(100% - 32px);
-      border-radius: 20px;
-      background: #ffffff;
-      padding: 14px 14px 16px;
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
-    }
-    .auth-tabs {
-      display: flex;
-      gap: 4px;
-      background: #f5f3ff;
-      border-radius: 999px;
-      padding: 4px;
-      margin-bottom: 10px;
-    }
-    .auth-tab {
-      flex: 1;
-      border-radius: 999px;
-      border: none;
-      font-size: 13px;
-      padding: 6px 0;
-      cursor: pointer;
-      background: transparent;
-    }
-    .auth-tab.active {
-      background: #ffffff;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
-    }
-    .auth-form input,
-    .auth-form select {
-      width: 100%;
-      margin-top: 6px;
-      padding: 7px 9px;
-      border-radius: 10px;
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      font-size: 13px;
-    }
-    .auth-row {
-      display: flex;
-      gap: 6px;
-    }
-    .badge {
-      display: inline-block;
-      border-radius: 999px;
-      padding: 3px 7px;
-      font-size: 11px;
-      background: #fff2fa;
-      color: #884b6a;
-    }
-  </style>
+  <title>BestFriends — вместе на расстоянии</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body data-theme="girls">
-  <!-- Модалка регистрации/входа -->
+  <!-- Модалка регистрации/входа/профиля -->
   <div class="overlay" id="authOverlay" hidden>
     <div class="auth-modal">
-      <div class="auth-tabs">
+      <div class="auth-tabs" id="authTabs">
         <button class="auth-tab active" id="tabRegister">Регистрация</button>
         <button class="auth-tab" id="tabLogin">Вход</button>
       </div>
+
+      <!-- Блок профиля после входа -->
+      <div id="profileView" hidden>
+        <h3>Привет, <span id="profileName"></span>!</h3>
+        <p class="muted" id="profileInfo"></p>
+        <button class="big-btn" id="btnLogout" style="margin-top:8px;">Выйти</button>
+      </div>
+
+      <!-- Форма регистрации/входа -->
       <form class="auth-form" id="authForm">
+        <!-- Регистрация -->
         <div id="registerFields">
           <input id="regUsername" placeholder="Имя пользователя" />
           <input id="regPassword" type="password" placeholder="Пароль" />
@@ -377,6 +43,7 @@
           <input id="regFavMovies" placeholder="Любимые фильмы/киновселенные" />
         </div>
 
+        <!-- Вход -->
         <div id="loginFields" hidden>
           <input id="loginUsername" placeholder="Имя пользователя" />
           <input id="loginPassword" type="password" placeholder="Пароль" />
@@ -392,7 +59,7 @@
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
-        <div class="logo">BFF</div>
+        <div class="logo">BF</div>
         <div>
           <h1>BestFriends</h1>
           <p>Лучшие друзья — вместе на расстоянии</p>
