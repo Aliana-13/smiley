@@ -4,6 +4,7 @@ const STORAGE_CURRENT_USER = 'bf_current';
 const STORAGE_THEME = 'bf_theme';
 const STORAGE_RATING = 'bf_rating';
 const STORAGE_CHAT = 'bf_chat';
+const STORAGE_FRIEND = 'bf_friend';
 
 // ==== Пользователи (localStorage) ====
 function loadUsers() {
@@ -25,6 +26,19 @@ function setCurrentUser(user) {
     localStorage.setItem(STORAGE_CURRENT_USER, JSON.stringify(user));
   } else {
     localStorage.removeItem(STORAGE_CURRENT_USER);
+  }
+}
+
+function getCurrentFriend() {
+  const raw = localStorage.getItem(STORAGE_FRIEND);
+  return raw ? JSON.parse(raw) : null;
+}
+
+function setCurrentFriend(friend) {
+  if (friend) {
+    localStorage.setItem(STORAGE_FRIEND, JSON.stringify(friend));
+  } else {
+    localStorage.removeItem(STORAGE_FRIEND);
   }
 }
 
@@ -63,6 +77,12 @@ function applyUserToUI() {
     myPet.textContent = '';
     avatar.innerHTML = '<span>M</span>';
     userSummary.innerHTML = '';
+
+    const coverPreview = document.getElementById('coverPreview');
+    if (coverPreview) {
+      coverPreview.style.backgroundImage = '';
+      coverPreview.textContent = 'Картинка пока не выбрана';
+    }
     return;
   }
 
@@ -77,6 +97,7 @@ function applyUserToUI() {
   }
 
   const badges = [];
+  if (user.nickname) badges.push('ник: ' + user.nickname);
   if (user.favDrink) badges.push('напиток: ' + user.favDrink);
   if (user.favFood) badges.push('еда: ' + user.favFood);
   if (user.favArtist) badges.push('музыка: ' + user.favArtist);
@@ -89,6 +110,20 @@ function applyUserToUI() {
   }
   if (user.gender) {
     applyTheme(user.gender);
+  }
+
+  // обложка
+  const coverPreview = document.getElementById('coverPreview');
+  if (coverPreview) {
+    if (user.cover) {
+      coverPreview.style.backgroundImage = 'url(' + user.cover + ')';
+      coverPreview.style.backgroundSize = 'cover';
+      coverPreview.style.backgroundPosition = 'center';
+      coverPreview.textContent = '';
+    } else {
+      coverPreview.style.backgroundImage = '';
+      coverPreview.textContent = 'Картинка пока не выбрана';
+    }
   }
 }
 
@@ -105,13 +140,13 @@ const cardTemplate = document.getElementById('cardTemplate');
 const menuButtons = document.querySelectorAll('.menu button');
 
 const sections = {
-  games: { title: 'Игры', desc: 'Мини‑игры для двоих: угадай число, крестики‑нолики.' },
+  games: { title: 'Игры', desc: 'Мини‑игры для двоих и ссылки на онлайн‑игры.' },
   discuss: { title: 'Обсуждения', desc: 'Обсуждайте любимые фильмы, музыку и события.' },
-  watch: { title: 'Совместный просмотр', desc: 'Комнаты, синхронный просмотр и чат (демо).' },
+  watch: { title: 'Совместный просмотр', desc: 'Линки на сервисы для просмотра фильмов вместе.' },
   ratings: { title: 'Оценка фильмов', desc: 'Ставьте оценки и получайте рекомендации.' },
   notes: { title: 'Записки', desc: 'Совместные заметки и списки дел.' },
   chat: { title: 'Чат', desc: 'Общайтесь в нижнем блоке чата.' },
-  profiles: { title: 'Профиль друга', desc: 'Просмотр и рекомендации по вкусам (демо).' }
+  profiles: { title: 'Профиль друга', desc: 'Добавьте друга по нику и смотрите профиль.' }
 };
 
 function renderSection(key) {
@@ -233,6 +268,23 @@ activityControls.addEventListener('click', e => {
   if (act === 'guess') renderGuessGame();
   if (act === 'ttt') renderTTTGame();
 });
+
+// Внешние игры и совместный просмотр
+const btnOpenGames = document.getElementById('btnOpenGames');
+const btnOpenWatch = document.getElementById('btnOpenWatch');
+
+if (btnOpenGames) {
+  btnOpenGames.addEventListener('click', () => {
+    window.open('https://www.crazygames.com/multiplayer', '_blank'); // онлайн-игры [web:216]
+  });
+}
+
+if (btnOpenWatch) {
+  btnOpenWatch.addEventListener('click', () => {
+    // сервис совместного просмотра (можно поменять на watch2gether) [web:210][web:215]
+    window.open('https://www.scener.com', '_blank');
+  });
+}
 
 // ==== Записки ====
 const notesList = document.getElementById('notesList');
@@ -359,6 +411,30 @@ document.getElementById('search').addEventListener('input', e => {
   });
 });
 
+// ==== Кастомная обложка ====
+const coverInput = document.getElementById('coverInput');
+const btnSaveCover = document.getElementById('btnSaveCover');
+
+if (btnSaveCover) {
+  btnSaveCover.addEventListener('click', () => {
+    const user = getCurrentUser();
+    if (!user) {
+      alert('Сначала войди или зарегистрируйся.');
+      return;
+    }
+    const url = coverInput.value.trim();
+    user.cover = url;
+    const users = loadUsers();
+    const idx = users.findIndex(u => u.username === user.username);
+    if (idx !== -1) {
+      users[idx] = user;
+      saveUsers(users);
+    }
+    setCurrentUser(user);
+    applyUserToUI();
+  });
+}
+
 // ==== Авторизация / модалка ====
 const authOverlay = document.getElementById('authOverlay');
 const authTabs = document.getElementById('authTabs');
@@ -429,9 +505,14 @@ authForm.addEventListener('submit', e => {
   if (isRegister) {
     const username = document.getElementById('regUsername').value.trim();
     const password = document.getElementById('regPassword').value;
+    const nickname = document.getElementById('regNickname').value.trim();
 
     if (!username || !password) {
       alert('Введи имя и пароль.');
+      return;
+    }
+    if (!nickname) {
+      alert('Придумай ник для добавления в друзья.');
       return;
     }
 
@@ -440,10 +521,15 @@ authForm.addEventListener('submit', e => {
       alert('Пользователь с таким именем уже существует.');
       return;
     }
+    if (users.some(u => u.nickname === nickname)) {
+      alert('Такой ник уже занят. Попробуй другой.');
+      return;
+    }
 
     const user = {
       username,
       password,
+      nickname,
       gender: document.getElementById('regGender').value,
       avatar: document.getElementById('regAvatar').value.trim(),
       pet: document.getElementById('regPet').value.trim(),
@@ -451,15 +537,17 @@ authForm.addEventListener('submit', e => {
       favDrink: document.getElementById('regFavDrink').value.trim(),
       favFood: document.getElementById('regFavFood').value.trim(),
       favArtist: document.getElementById('regFavArtist').value.trim(),
-      favMovies: document.getElementById('regFavMovies').value.trim()
+      favMovies: document.getElementById('regFavMovies').value.trim(),
+      cover: document.getElementById('regCover').value.trim(),
+      friends: []
     };
 
     users.push(user);
-    saveUsers(users);          // сохраняем всех пользователей [web:175][web:177]
+    saveUsers(users);          // сохраняем всех пользователей [web:58]
     setCurrentUser(user);      // делаем текущим
     applyUserToUI();
     renderRating();
-    authOverlay.hidden = true; // ЗАКРЫВАЕМ МОДАЛКУ
+    authOverlay.hidden = true; // закрываем модалку
   } else {
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -479,7 +567,7 @@ authForm.addEventListener('submit', e => {
     setCurrentUser(user);
     applyUserToUI();
     renderRating();
-    authOverlay.hidden = true; // ЗАКРЫВАЕМ МОДАЛКУ
+    authOverlay.hidden = true; // закрываем модалку
   }
 });
 
@@ -491,4 +579,64 @@ btnLogout.addEventListener('click', () => {
   authOverlay.hidden = true;
 });
 
+// ==== Профиль друга ====
+const friendNicknameInput = document.getElementById('friendNicknameInput');
+const btnAddFriend = document.getElementById('btnAddFriend');
+const friendProfile = document.getElementById('friendProfile');
 
+function renderFriendProfile() {
+  if (!friendProfile) return;
+  const friend = getCurrentFriend();
+  if (!friend) {
+    friendProfile.textContent = 'Друг ещё не выбран.';
+    return;
+  }
+  friendProfile.innerHTML =
+    '<strong>' + (friend.username || friend.nickname) + '</strong>' +
+    (friend.nickname ? '<br/>Ник: ' + friend.nickname : '') +
+    (friend.pet ? '<br/>Питомец: ' + friend.pet : '') +
+    (friend.favMovies ? '<br/>Любимые фильмы: ' + friend.favMovies : '') +
+    (friend.favArtist ? '<br/>Музыка: ' + friend.favArtist : '');
+}
+
+if (btnAddFriend) {
+  btnAddFriend.addEventListener('click', () => {
+    const nick = friendNicknameInput.value.trim();
+    if (!nick) return;
+
+    const users = loadUsers();
+    const friend = users.find(u => u.nickname === nick);
+    if (!friend) {
+      alert('Пользователь с таким ником не найден.');
+      return;
+    }
+
+    setCurrentFriend({
+      username: friend.username,
+      nickname: friend.nickname,
+      pet: friend.pet,
+      favMovies: friend.favMovies,
+      favArtist: friend.favArtist
+    });
+
+    // Добавляем в список друзей текущего пользователя
+    const current = getCurrentUser();
+    if (current) {
+      current.friends = current.friends || [];
+      if (!current.friends.includes(friend.nickname)) {
+        current.friends.push(friend.nickname);
+        const usersAll = loadUsers();
+        const idx = usersAll.findIndex(u => u.username === current.username);
+        if (idx !== -1) {
+          usersAll[idx] = current;
+          saveUsers(usersAll);
+        }
+        setCurrentUser(current);
+      }
+    }
+
+    renderFriendProfile();
+  });
+}
+
+renderFriendProfile();
