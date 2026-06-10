@@ -352,6 +352,10 @@ body {
   z-index: 20;
 }
 
+.overlay[hidden] {
+  display: none !important;
+}
+
 .auth-modal {
   width: 360px;
   max-width: calc(100% - 32px);
