@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BestFriends — вместе на расстоянии</title>
+  <title>Besties — вместе на расстоянии</title>
 
-  <!-- Иконка сайта, чтобы не было 404 по favicon.ico -->
+  <!-- Иконка сайта (по желанию, положи рядом favicon.png) -->
   <link rel="icon" type="image/png" href="favicon.png" />
 
   <link rel="stylesheet" href="style.css" />
@@ -36,6 +36,7 @@
         <div id="registerFields">
           <input id="regUsername" placeholder="Имя пользователя" />
           <input id="regPassword" type="password" placeholder="Пароль" />
+          <input id="regNickname" placeholder="Ник (для добавления в друзья)" />
           <select id="regGender">
             <option value="girls">Я девочка</option>
             <option value="boys">Я мальчик</option>
@@ -49,6 +50,7 @@
           </div>
           <input id="regFavArtist" placeholder="Любимый исполнитель" />
           <input id="regFavMovies" placeholder="Любимые фильмы/киновселенные" />
+          <input id="regCover" placeholder="URL обложки профиля (по желанию)" />
         </div>
 
         <!-- Вход -->
@@ -67,9 +69,9 @@
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
-        <div class="logo">BF</div>
+        <div class="logo">BFF</div>
         <div>
-          <h1>BestFriends</h1>
+          <h1>Besties</h1>
           <p>Лучшие друзья — вместе на расстоянии</p>
         </div>
       </div>
@@ -123,6 +125,19 @@
         </div>
       </div>
 
+      <!-- Кастомная обложка своей страницы -->
+      <div class="card" id="coverCard" style="margin-bottom:10px;">
+        <h3>Моя страница</h3>
+        <p class="muted">Добавь картинку‑обложку для своей странички.</p>
+        <div id="coverPreview" style="margin-top:8px;min-height:80px;border-radius:12px;background:#f3f3ff;display:flex;align-items:center;justify-content:center;color:#999;font-size:13px;">
+          Картинка пока не выбрана
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input id="coverInput" placeholder="URL картинки..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+          <button class="big-btn" id="btnSaveCover">Сохранить</button>
+        </div>
+      </div>
+
       <section class="cards" id="sectionsContainer"></section>
 
       <div style="display:flex;gap:12px;margin-top:12px;align-items:flex-start">
@@ -139,15 +154,21 @@
           </div>
         </div>
 
-        <div style="width:340px">
+        <div style="width:360px">
           <div class="card">
             <h3>Игры и обсуждения</h3>
-            <p class="muted">Мини‑игры для двоих и небольшой чат.</p>
+            <p class="muted">Мини‑игры для двоих и ссылки на онлайн‑игры.</p>
             <div class="controls" style="margin-top:10px" id="activityControls">
               <button class="pill" data-activity="guess">Угадай число</button>
               <button class="pill" data-activity="ttt">Крестики‑нолики</button>
             </div>
             <div class="game-area" id="gameArea" style="margin-top:10px"></div>
+
+            <!-- Ссылки на внешние игры и совместный просмотр -->
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+              <button class="pill" id="btnOpenGames">Играть онлайн (новая вкладка)</button>
+              <button class="pill" id="btnOpenWatch">Смотреть фильм вместе</button>
+            </div>
           </div>
 
           <div class="card" style="margin-top:10px">
@@ -169,6 +190,17 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Профиль друга -->
+      <div class="card" style="margin-top:12px;">
+        <h3>Профиль друга</h3>
+        <p class="muted">Добавь друга по нику и посмотри его профиль (локально).</p>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input id="friendNicknameInput" placeholder="Ник друга..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+          <button class="big-btn" id="btnAddFriend">Добавить друга</button>
+        </div>
+        <div id="friendProfile" style="margin-top:10px;" class="muted"></div>
       </div>
 
       <div class="card" style="margin-top:12px;">
