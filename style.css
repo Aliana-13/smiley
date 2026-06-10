@@ -352,6 +352,7 @@ body {
   z-index: 20;
 }
 
+/* Важно: скрывать overlay по hidden */
 .overlay[hidden] {
   display: none !important;
 }
