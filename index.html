@@ -11,44 +11,46 @@
   <div class="overlay" id="authOverlay" hidden>
     <div class="auth-modal">
       <div class="auth-tabs">
-        <button class="auth-tab active" id="tabRegister">Регистрация</button>
-        <button class="auth-tab" id="tabLogin">Вход</button>
+        <button class="auth-tab active" id="tabRegister" data-i18n="auth.registerTab">Регистрация</button>
+        <button class="auth-tab" id="tabLogin" data-i18n="auth.loginTab">Вход</button>
       </div>
       <form class="auth-form" id="authForm">
         <div id="registerFields">
-          <input id="regUsername" placeholder="Имя пользователя" required />
-          <input id="regPassword" type="password" placeholder="Пароль" required />
+          <input id="regUsername" data-i18n-placeholder="auth.username" placeholder="Имя пользователя" required />
+          <input id="regPassword" type="password" data-i18n-placeholder="auth.password" placeholder="Пароль" required />
           <select id="regGender">
-            <option value="girls">Я девочка</option>
-            <option value="boys">Я мальчик</option>
+            <option value="girls" data-i18n="auth.genderGirl">Я девочка</option>
+            <option value="boys" data-i18n="auth.genderBoy">Я мальчик</option>
           </select>
-          <input id="regAvatar" placeholder="URL аватарки (по желанию)" />
-          <input id="regPet" placeholder="Имя питомца" />
+          <input id="regAvatar" data-i18n-placeholder="auth.avatar" placeholder="URL аватарки (по желанию)" />
+          <input id="regPet" data-i18n-placeholder="auth.pet" placeholder="Имя питомца" />
 
-          <input id="regFavColor" placeholder="Любимый цвет (#FFC5D3 или pink)" />
+          <input id="regFavColor" data-i18n-placeholder="auth.favColor" placeholder="Любимый цвет (#FFC5D3 или pink)" />
           <div class="auth-row">
-            <input id="regFavDrink" placeholder="Любимый напиток" />
-            <input id="regFavFood" placeholder="Любимая еда" />
+            <input id="regFavDrink" data-i18n-placeholder="auth.favDrink" placeholder="Любимый напиток" />
+            <input id="regFavFood" data-i18n-placeholder="auth.favFood" placeholder="Любимая еда" />
           </div>
-          <input id="regFavArtist" placeholder="Любимый исполнитель" />
-          <input id="regFavMovies" placeholder="Любимые фильмы/киновселенные" />
+          <input id="regFavArtist" data-i18n-placeholder="auth.favArtist" placeholder="Любимый исполнитель" />
+          <input id="regFavMovies" data-i18n-placeholder="auth.favMovies" placeholder="Любимые фильмы/киновселенные" />
 
           <div class="music-bar" style="margin-top:4px;">
-            <span>Музыка:</span>
+            <span data-i18n="auth.musicLabel">Музыка:</span>
             <select id="regMusicMood">
-              <option value="lofi">Lo‑fi</option>
-              <option value="calm">Спокойная</option>
-              <option value="none">Без музыки</option>
+              <option value="lofi" data-i18n="auth.musicLofi">Lo‑fi</option>
+              <option value="calm" data-i18n="auth.musicCalm">Спокойная</option>
+              <option value="none" data-i18n="auth.musicNone">Без музыки</option>
             </select>
           </div>
         </div>
 
         <div id="loginFields" hidden>
-          <input id="loginUsername" placeholder="Имя пользователя" required />
-          <input id="loginPassword" type="password" placeholder="Пароль" required />
+          <input id="loginUsername" data-i18n-placeholder="auth.username" placeholder="Имя пользователя" required />
+          <input id="loginPassword" type="password" data-i18n-placeholder="auth.password" placeholder="Пароль" required />
         </div>
 
-        <button class="big-btn" type="submit" style="margin-top:8px;">Продолжить</button>
+        <button class="big-btn" type="submit" style="margin-top:8px;" data-i18n="auth.submit">
+          Продолжить
+        </button>
       </form>
     </div>
   </div>
@@ -58,32 +60,43 @@
       <div class="brand">
         <div class="logo">BF</div>
         <div>
-          <h1>BestFriends</h1>
-          <p>Лучшие друзья — вместе на расстоянии</p>
+          <h1 data-i18n="brand.title">BestFriends</h1>
+          <p data-i18n="brand.subtitle">Лучшие друзья — вместе на расстоянии</p>
         </div>
       </div>
 
       <div class="toggle-row">
         <div class="theme-switch">
-          <button class="switch-btn active" data-theme="girls" id="btnGirls">Девочки</button>
-          <button class="switch-btn" data-theme="boys" id="btnBoys">Мальчики</button>
+          <button class="switch-btn active" data-theme="girls" id="btnGirls" data-i18n="theme.girls">Девочки</button>
+          <button class="switch-btn" data-theme="boys" id="btnBoys" data-i18n="theme.boys">Мальчики</button>
         </div>
-        <button class="big-btn" id="btnAccount">Аккаунт</button>
+        <button class="big-btn" id="btnAccount" data-i18n="buttons.account">Аккаунт</button>
+      </div>
+
+      <div class="toggle-row" style="margin-top:6px;">
+        <span class="muted" data-i18n="lang.label">Язык:</span>
+        <select id="langSelect">
+          <option value="ru">RU</option>
+          <option value="en">EN</option>
+          <option value="de">DE</option>
+          <option value="fr">FR</option>
+        </select>
       </div>
 
       <nav class="menu" aria-label="Навигация">
-        <button data-section="games">Игры</button>
-        <button data-section="discuss">Обсуждения</button>
-        <button data-section="watch">Совместный просмотр</button>
-        <button data-section="ratings">Оценка фильмов</button>
-        <button data-section="notes">Записки</button>
-        <button data-section="chat">Чат</button>
-        <button data-section="profiles">Профиль друга</button>
+        <button data-section="games" data-i18n="menu.games">Игры</button>
+        <button data-section="discuss" data-i18n="menu.discuss">Обсуждения</button>
+        <button data-section="watch" data-i18n="menu.watch">Совместный просмотр</button>
+        <button data-section="ratings" data-i18n="menu.ratings">Оценка фильмов</button>
+        <button data-section="notes" data-i18n="menu.notes">Записки</button>
+        <button data-section="chat" data-i18n="menu.chat">Чат</button>
+        <button data-section="profiles" data-i18n="menu.profiles">Профиль друга</button>
       </nav>
 
       <div style="margin-top:auto">
         <div class="muted">
-          Тема: <strong id="currentTheme">Девочки</strong><br />
+          <span data-i18n="theme.label">Тема:</span>
+          <strong id="currentTheme">Девочки</strong><br />
           <span id="userSummary"></span>
         </div>
       </div>
@@ -97,7 +110,7 @@
               <path d="M21 21l-4.35-4.35" stroke="#C4C4C4" stroke-linecap="round" stroke-linejoin="round"></path>
               <circle cx="11" cy="11" r="6" stroke="#C4C4C4" stroke-linecap="round" stroke-linejoin="round"></circle>
             </svg>
-            <input id="search" placeholder="Поиск по карточкам..." />
+            <input id="search" data-i18n-placeholder="search.placeholder" placeholder="Поиск по карточкам..." />
           </div>
 
           <div class="profile">
@@ -111,8 +124,8 @@
         </div>
 
         <div style="display:flex;gap:8px;align-items:center">
-          <button class="pill" id="toggleOnline">В сети</button>
-          <button class="pill right" id="toggleDoNotDisturb">Не беспокоить</button>
+          <button class="pill" id="toggleOnline" data-i18n="status.online">В сети</button>
+          <button class="pill right" id="toggleDoNotDisturb" data-i18n="status.dnd">Не беспокоить</button>
         </div>
       </div>
 
@@ -121,11 +134,11 @@
       <div style="display:flex;gap:12px;margin-top:12px;align-items:flex-start">
         <div style="flex:1">
           <div class="card">
-            <h3>Музыка для настроения</h3>
-            <p class="muted">Трек подбирается по твоим музыкальным предпочтениям.</p>
+            <h3 data-i18n="music.title">Музыка для настроения</h3>
+            <p class="muted" data-i18n="music.desc">Трек подбирается по твоим музыкальным предпочтениям.</p>
             <div class="music-bar">
-              <button class="pill" id="musicToggle">▶ Музыка</button>
-              <span>Громкость</span>
+              <button class="pill" id="musicToggle" data-i18n="music.button">▶ Музыка</button>
+              <span data-i18n="music.volume">Громкость</span>
               <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.5" />
             </div>
             <audio id="bgMusic" loop>
@@ -134,33 +147,33 @@
           </div>
 
           <div class="card" style="margin-top:10px">
-            <h3>Записки</h3>
+            <h3 data-i18n="notes.title">Записки</h3>
             <div class="notes" id="notesList">
-              <div class="note-item">Привет! Это первая совместная записка.</div>
+              <div class="note-item" data-i18n="notes.first">Привет! Это первая совместная записка.</div>
             </div>
             <div style="display:flex;gap:8px;margin-top:8px">
-              <input id="noteInput" placeholder="Новая записка..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
-              <button class="big-btn" id="addNote">Добавить</button>
+              <input id="noteInput" data-i18n-placeholder="notes.placeholder" placeholder="Новая записка..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+              <button class="big-btn" id="addNote" data-i18n="notes.add">Добавить</button>
             </div>
           </div>
         </div>
 
         <div style="width:340px">
           <div class="card">
-            <h3>Игры и обсуждения</h3>
-            <p class="muted">Мини‑игры для двоих и небольшой чат.</p>
+            <h3 data-i18n="gamesBlock.title">Игры и обсуждения</h3>
+            <p class="muted" data-i18n="gamesBlock.desc">Мини‑игры для двоих и небольшой чат.</p>
             <div class="controls" style="margin-top:10px" id="activityControls">
-              <button class="pill" data-activity="guess">Угадай число</button>
-              <button class="pill" data-activity="ttt">Крестики‑нолики</button>
+              <button class="pill" data-activity="guess" data-i18n="gamesBlock.guess">Угадай число</button>
+              <button class="pill" data-activity="ttt" data-i18n="gamesBlock.ttt">Крестики‑нолики</button>
             </div>
             <div class="game-area" id="gameArea" style="margin-top:10px"></div>
           </div>
 
           <div class="card" style="margin-top:10px">
-            <h3>Оценка фильмов</h3>
-            <p class="muted">Оцени фильм и посмотри рекомендации.</p>
+            <h3 data-i18n="rating.title">Оценка фильмов</h3>
+            <p class="muted" data-i18n="rating.desc">Оцени фильм и посмотри рекомендации.</p>
             <div style="margin-top:10px">
-              <div><strong id="movieTitle">Фильм: "Суперфрендс"</strong></div>
+              <div><strong id="movieTitle" data-i18n="rating.movieTitle">Фильм: "Суперфрендс"</strong></div>
               <div style="margin-top:8px" class="stars" id="movieStars">
                 <div class="star" data-value="1">1</div>
                 <div class="star" data-value="2">2</div>
@@ -169,7 +182,8 @@
                 <div class="star" data-value="5">5</div>
               </div>
               <div style="margin-top:8px" class="muted">
-                Текущий рейтинг: <span id="currentRating">—</span>
+                <span data-i18n="rating.current">Текущий рейтинг:</span>
+                <span id="currentRating">—</span>
               </div>
               <div style="margin-top:8px" class="muted" id="movieRec"></div>
             </div>
@@ -178,11 +192,11 @@
       </div>
 
       <div class="card" style="margin-top:12px;">
-        <h3>Чат</h3>
+        <h3 data-i18n="chat.title">Чат</h3>
         <div class="chat-box" id="chatBox"></div>
         <div style="display:flex;gap:8px;margin-top:8px;">
-          <input id="chatInput" placeholder="Написать сообщение..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
-          <button class="big-btn" id="chatSend">Отправить</button>
+          <input id="chatInput" data-i18n-placeholder="chat.placeholder" placeholder="Написать сообщение..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+          <button class="big-btn" id="chatSend" data-i18n="chat.send">Отправить</button>
         </div>
       </div>
     </main>
