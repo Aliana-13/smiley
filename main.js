@@ -3,13 +3,6 @@ const STORAGE_THEME = 'bf_theme';
 const STORAGE_RATING = 'bf_rating';
 const STORAGE_CHAT = 'bf_chat';
 
-// Музыка
-const MUSIC_SOURCES = {
-  lofi: 'music/lofi.mp3',
-  calm: 'music/calm.mp3',
-  none: ''
-};
-
 function getUser() {
   const raw = localStorage.getItem(STORAGE_USER);
   return raw ? JSON.parse(raw) : null;
@@ -54,7 +47,7 @@ function applyUserToUI() {
     myPet.textContent = '';
     avatar.innerHTML = '<span>M</span>';
     userSummary.textContent = '';
-    if (btnAccount) btnAccount.style.display = ''; // показать кнопку, если нет пользователя
+    if (btnAccount) btnAccount.style.display = '';
     return;
   }
 
@@ -83,11 +76,9 @@ function applyUserToUI() {
     applyTheme(user.gender);
   }
 
-  // пользователь есть — кнопку "Аккаунт" прячем
   if (btnAccount) btnAccount.style.display = 'none';
 }
 
-// инициализация
 applyTheme(localStorage.getItem(STORAGE_THEME) || 'girls');
 applyUserToUI();
 
@@ -344,38 +335,6 @@ document.getElementById('toggleDoNotDisturb').addEventListener('click', e => {
   e.target.textContent = e.target.classList.contains('active') ? 'Не беспокоить' : 'Доступен';
 });
 
-// ==== Музыка ====
-const bgMusic = document.getElementById('bgMusic');
-const bgMusicSrc = document.getElementById('bgMusicSrc');
-const musicToggle = document.getElementById('musicToggle');
-const musicVolume = document.getElementById('musicVolume');
-
-function applyMusicFromUser() {
-  const user = getUser();
-  const mood = user?.musicMood || 'none';
-  const src = MUSIC_SOURCES[mood] || '';
-  bgMusicSrc.src = src;
-  bgMusic.load();
-}
-
-musicVolume.addEventListener('input', () => {
-  bgMusic.volume = Number(musicVolume.value);
-});
-
-musicToggle.addEventListener('click', () => {
-  if (!bgMusicSrc.src) {
-    alert('Музыка не настроена. Поставь путь к mp3 в main.js.');
-    return;
-  }
-  if (bgMusic.paused) {
-    bgMusic.play();
-    musicToggle.textContent = '⏸ Пауза';
-  } else {
-    bgMusic.pause();
-    musicToggle.textContent = '▶ Музыка';
-  }
-});
-
 // ==== Поиск ====
 document.getElementById('search').addEventListener('input', e => {
   const q = e.target.value.trim().toLowerCase();
@@ -395,7 +354,7 @@ const authForm = document.getElementById('authForm');
 
 btnAccount.addEventListener('click', () => {
   const user = getUser();
-  if (user) return; // если уже зарегистрирован/вошёл — не открываем
+  if (user) return; // уже есть пользователь — не открываем снова
   authOverlay.hidden = false;
 });
 
@@ -441,14 +400,12 @@ authForm.addEventListener('submit', e => {
       favDrink: document.getElementById('regFavDrink').value.trim(),
       favFood: document.getElementById('regFavFood').value.trim(),
       favArtist: document.getElementById('regFavArtist').value.trim(),
-      favMovies: document.getElementById('regFavMovies').value.trim(),
-      musicMood: document.getElementById('regMusicMood').value
+      favMovies: document.getElementById('regFavMovies').value.trim()
     };
 
-    setUser(user);          // сохраняем пользователя [web:94][web:97]
-    applyUserToUI();        // обновляем профиль + скрываем кнопку Аккаунт
-    applyMusicFromUser();   // настраиваем музыку
-    authOverlay.hidden = true; // СКРЫВАЕМ форму после регистрации
+    setUser(user);      // сохраняем в localStorage [web:94][web:97]
+    applyUserToUI();    // обновляем профиль, скрываем кнопку "Аккаунт"
+    authOverlay.hidden = true; // закрываем форму
   } else {
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -465,9 +422,6 @@ authForm.addEventListener('submit', e => {
     }
 
     applyUserToUI();
-    applyMusicFromUser();
     authOverlay.hidden = true;
   }
 });
-
-applyMusicFromUser();
