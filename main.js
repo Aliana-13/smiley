@@ -64,6 +64,69 @@ function applyTheme(theme) {
   localStorage.setItem(STORAGE_THEME, theme);
 }
 
+function ensureUserProfile(user) {
+  if (!user.profile) {
+    user.profile = {
+      background: '',
+      photo: '',
+      stickers: ['', '', '']
+    };
+  } else {
+    if (!Array.isArray(user.profile.stickers)) {
+      user.profile.stickers = ['', '', ''];
+    } else if (user.profile.stickers.length < 3) {
+      while (user.profile.stickers.length < 3) {
+        user.profile.stickers.push('');
+      }
+    }
+  }
+}
+
+function applyProfileToUI() {
+  const user = getCurrentUser();
+  const bgEl = document.getElementById('profileBg');
+  const photoEl = document.getElementById('profilePhotoPreview');
+  const s1 = document.getElementById('stickerSlot1');
+  const s2 = document.getElementById('stickerSlot2');
+  const s3 = document.getElementById('stickerSlot3');
+
+  if (!bgEl || !photoEl || !s1 || !s2 || !s3) return;
+
+  if (!user) {
+    bgEl.style.backgroundImage = '';
+    photoEl.innerHTML = 'Фото';
+    s1.textContent = 'Стикер 1';
+    s2.textContent = 'Стикер 2';
+    s3.textContent = 'Стикер 3';
+    return;
+  }
+
+  ensureUserProfile(user);
+
+  if (user.profile.background) {
+    bgEl.style.backgroundImage = 'url(' + user.profile.background + ')';
+  } else {
+    bgEl.style.backgroundImage = '';
+  }
+
+  if (user.profile.photo) {
+    photoEl.innerHTML = '<img src="' + user.profile.photo + '" alt="profile photo" />';
+  } else {
+    photoEl.innerHTML = 'Фото';
+  }
+
+  const slots = [s1, s2, s3];
+  user.profile.stickers.forEach((url, i) => {
+    const slot = slots[i];
+    if (!slot) return;
+    if (url) {
+      slot.innerHTML = '<img src="' + url + '" alt="sticker" />';
+    } else {
+      slot.textContent = 'Стикер ' + (i + 1);
+    }
+  });
+}
+
 function applyUserToUI() {
   const user = getCurrentUser();
   const myName = document.getElementById('myName');
@@ -83,6 +146,7 @@ function applyUserToUI() {
       coverPreview.style.backgroundImage = '';
       coverPreview.textContent = 'Картинка пока не выбрана';
     }
+    applyProfileToUI();
     return;
   }
 
@@ -112,7 +176,6 @@ function applyUserToUI() {
     applyTheme(user.gender);
   }
 
-  // обложка
   const coverPreview = document.getElementById('coverPreview');
   if (coverPreview) {
     if (user.cover) {
@@ -125,19 +188,46 @@ function applyUserToUI() {
       coverPreview.textContent = 'Картинка пока не выбрана';
     }
   }
+
+  applyProfileToUI();
 }
 
 // init
 applyTheme(localStorage.getItem(STORAGE_THEME) || 'girls');
 applyUserToUI();
 
+// ==== Переключение "страниц" (views) ====
+const views = {
+  home: document.getElementById('view-home'),
+  'my-profile': document.getElementById('view-my-profile'),
+  games: document.getElementById('view-games'),
+  friend: document.getElementById('view-friend')
+};
+
+function showView(name) {
+  Object.keys(views).forEach(key => {
+    if (!views[key]) return;
+    views[key].style.display = key === name ? '' : 'none';
+  });
+}
+
+const menuButtons = document.querySelectorAll('.menu button');
+menuButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const v = btn.dataset.view;
+    if (v) showView(v);
+  });
+});
+
+showView('home');
+
+// ==== Тема переключатели ====
 btnGirls.addEventListener('click', () => applyTheme('girls'));
 btnBoys.addEventListener('click', () => applyTheme('boys'));
 
-// ==== Разделы ====
+// ==== Разделы (карточка с описанием) ====
 const sectionsContainer = document.getElementById('sectionsContainer');
 const cardTemplate = document.getElementById('cardTemplate');
-const menuButtons = document.querySelectorAll('.menu button');
 
 const sections = {
   games: { title: 'Игры', desc: 'Мини‑игры для двоих и ссылки на онлайн‑игры.' },
@@ -158,49 +248,50 @@ function renderSection(key) {
   sectionsContainer.appendChild(tpl);
 }
 
-menuButtons.forEach(b => b.addEventListener('click', () => renderSection(b.dataset.section)));
 renderSection('watch');
 
-// ==== Игры ====
+// ==== Игры: общие функции ====
 const activityControls = document.getElementById('activityControls');
 const gameArea = document.getElementById('gameArea');
+const activityControlsFull = document.getElementById('activityControlsFull');
+const gameAreaFull = document.getElementById('gameAreaFull');
 
-function renderGuessGame() {
-  gameArea.innerHTML = `
+function renderGuessGameInto(el) {
+  el.innerHTML = `
     <div class="muted">Компьютер загадал число от 1 до 20. Попробуй угадать!</div>
-    <input class="guess-input" id="guessInput" placeholder="Введи число..." />
-    <button class="pill" id="guessBtn">Проверить</button>
-    <div class="muted" id="guessResult"></div>
+    <input class="guess-input" placeholder="Введи число..." />
+    <button class="pill">Проверить</button>
+    <div class="muted"></div>
   `;
   const secret = Math.floor(Math.random() * 20) + 1;
-  const guessBtn = document.getElementById('guessBtn');
-  const guessInput = document.getElementById('guessInput');
-  const guessResult = document.getElementById('guessResult');
+  const input = el.querySelector('input');
+  const btn = el.querySelector('button');
+  const res = el.querySelector('div.muted:last-child');
 
-  guessBtn.addEventListener('click', () => {
-    const val = Number(guessInput.value);
+  btn.addEventListener('click', () => {
+    const val = Number(input.value);
     if (!val) {
-      guessResult.textContent = 'Введи число.';
+      res.textContent = 'Введи число.';
     } else if (val === secret) {
-      guessResult.textContent = 'Ура! Ты угадал число ' + secret + '!';
+      res.textContent = 'Ура! Ты угадал число ' + secret + '!';
     } else if (val < secret) {
-      guessResult.textContent = 'Мало. Попробуй больше.';
+      res.textContent = 'Мало. Попробуй больше.';
     } else {
-      guessResult.textContent = 'Много. Попробуй меньше.';
+      res.textContent = 'Много. Попробуй меньше.';
     }
   });
 }
 
-function renderTTTGame() {
-  gameArea.innerHTML = `
+function renderTTTGameInto(el) {
+  el.innerHTML = `
     <div class="muted">Крестики‑нолики для двух игроков на одном устройстве.</div>
-    <div class="ttt-grid" id="tttGrid"></div>
-    <div class="muted" id="tttStatus">Ход: X</div>
-    <button class="pill" id="tttReset">Сбросить</button>
+    <div class="ttt-grid"></div>
+    <div class="muted">Ход: X</div>
+    <button class="pill">Сбросить</button>
   `;
-  const grid = document.getElementById('tttGrid');
-  const status = document.getElementById('tttStatus');
-  const reset = document.getElementById('tttReset');
+  const grid = el.querySelector('.ttt-grid');
+  const status = el.querySelectorAll('.muted')[1];
+  const reset = el.querySelector('button');
 
   let board = Array(9).fill('');
   let current = 'X';
@@ -256,33 +347,61 @@ function renderTTTGame() {
   renderGrid();
 }
 
+// Игры на главной
 activityControls.addEventListener('click', e => {
   const pill = e.target.closest('.pill');
   if (!pill) return;
   const act = pill.dataset.activity;
   if (!act) return;
-
   activityControls.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
   pill.classList.add('active');
 
-  if (act === 'guess') renderGuessGame();
-  if (act === 'ttt') renderTTTGame();
+  if (act === 'guess') renderGuessGameInto(gameArea);
+  if (act === 'ttt') renderTTTGameInto(gameArea);
 });
+
+// Игры на отдельной странице
+if (activityControlsFull) {
+  activityControlsFull.addEventListener('click', e => {
+    const pill = e.target.closest('.pill');
+    if (!pill) return;
+    const act = pill.dataset.activity;
+    if (!act) return;
+    activityControlsFull
+      .querySelectorAll('.pill')
+      .forEach(x => x.classList.remove('active'));
+    pill.classList.add('active');
+
+    if (act === 'guess') renderGuessGameInto(gameAreaFull);
+    if (act === 'ttt') renderTTTGameInto(gameAreaFull);
+  });
+}
 
 // Внешние игры и совместный просмотр
 const btnOpenGames = document.getElementById('btnOpenGames');
 const btnOpenWatch = document.getElementById('btnOpenWatch');
+const btnOpenGamesFull = document.getElementById('btnOpenGamesFull');
+const btnOpenWatchFull = document.getElementById('btnOpenWatchFull');
 
 if (btnOpenGames) {
   btnOpenGames.addEventListener('click', () => {
-    window.open('https://www.crazygames.com/multiplayer', '_blank'); // онлайн-игры [web:216]
+    window.open('https://www.crazygames.com/multiplayer', '_blank'); // [web:216]
+  });
+}
+if (btnOpenWatch) {
+  btnOpenWatch.addEventListener('click', () => {
+    window.open('https://www.scener.com', '_blank'); // [web:215]
   });
 }
 
-if (btnOpenWatch) {
-  btnOpenWatch.addEventListener('click', () => {
-    // сервис совместного просмотра (можно поменять на watch2gether) [web:210][web:215]
-    window.open('https://www.scener.com', '_blank');
+if (btnOpenGamesFull) {
+  btnOpenGamesFull.addEventListener('click', () => {
+    window.open('https://www.crazygames.com/multiplayer', '_blank'); // [web:216]
+  });
+}
+if (btnOpenWatchFull) {
+  btnOpenWatchFull.addEventListener('click', () => {
+    window.open('https://www.scener.com', '_blank'); // [web:215]
   });
 }
 
@@ -399,7 +518,9 @@ document.getElementById('toggleOnline').addEventListener('click', e => {
 
 document.getElementById('toggleDoNotDisturb').addEventListener('click', e => {
   e.target.classList.toggle('active');
-  e.target.textContent = e.target.classList.contains('active') ? 'Не беспокоить' : 'Доступен';
+  e.target.textContent = e.target.classList.contains('active')
+    ? 'Не беспокоить'
+    : 'Доступен';
 });
 
 // ==== Поиск ====
@@ -435,6 +556,57 @@ if (btnSaveCover) {
   });
 }
 
+// ==== Страница профиля (inputs) ====
+const profileBgInput = document.getElementById('profileBgInput');
+const profilePhotoInput = document.getElementById('profilePhotoInput');
+const stickerInput1 = document.getElementById('stickerInput1');
+const stickerInput2 = document.getElementById('stickerInput2');
+const stickerInput3 = document.getElementById('stickerInput3');
+const btnSaveProfile = document.getElementById('btnSaveProfile');
+
+if (btnSaveProfile) {
+  btnSaveProfile.addEventListener('click', () => {
+    const user = getCurrentUser();
+    if (!user) {
+      alert('Сначала войди или зарегистрируйся.');
+      return;
+    }
+
+    ensureUserProfile(user);
+
+    user.profile.background = profileBgInput.value.trim();
+    user.profile.photo = profilePhotoInput.value.trim();
+    user.profile.stickers = [
+      stickerInput1.value.trim(),
+      stickerInput2.value.trim(),
+      stickerInput3.value.trim()
+    ];
+
+    const users = loadUsers();
+    const idx = users.findIndex(u => u.username === user.username);
+    if (idx !== -1) {
+      users[idx] = user;
+      saveUsers(users);
+    }
+    setCurrentUser(user);
+
+    applyProfileToUI();
+  });
+}
+
+function fillProfileInputsFromUser() {
+  const user = getCurrentUser();
+  if (!user) return;
+  ensureUserProfile(user);
+  if (profileBgInput) profileBgInput.value = user.profile.background || '';
+  if (profilePhotoInput) profilePhotoInput.value = user.profile.photo || '';
+  if (stickerInput1) stickerInput1.value = user.profile.stickers[0] || '';
+  if (stickerInput2) stickerInput2.value = user.profile.stickers[1] || '';
+  if (stickerInput3) stickerInput3.value = user.profile.stickers[2] || '';
+}
+
+fillProfileInputsFromUser();
+
 // ==== Авторизация / модалка ====
 const authOverlay = document.getElementById('authOverlay');
 const authTabs = document.getElementById('authTabs');
@@ -463,7 +635,6 @@ function showLoginTab() {
   loginFields.hidden = false;
 }
 
-// открыть по кнопке Аккаунт
 btnAccount.addEventListener('click', () => {
   const user = getCurrentUser();
   if (user) {
@@ -483,21 +654,17 @@ btnAccount.addEventListener('click', () => {
   authOverlay.hidden = false;
 });
 
-// закрытие по клику вне модалки
 authOverlay.addEventListener('click', e => {
   if (e.target === authOverlay) authOverlay.hidden = true;
 });
 
-// закрытие по кнопке "Закрыть"
 btnCloseAuth.addEventListener('click', () => {
   authOverlay.hidden = true;
 });
 
-// вкладки
 tabRegister.addEventListener('click', showRegisterTab);
 tabLogin.addEventListener('click', showLoginTab);
 
-// submit регистрации/входа
 authForm.addEventListener('submit', e => {
   e.preventDefault();
   const isRegister = !registerFields.hidden;
@@ -539,15 +706,21 @@ authForm.addEventListener('submit', e => {
       favArtist: document.getElementById('regFavArtist').value.trim(),
       favMovies: document.getElementById('regFavMovies').value.trim(),
       cover: document.getElementById('regCover').value.trim(),
-      friends: []
+      friends: [],
+      profile: {
+        background: '',
+        photo: '',
+        stickers: ['', '', '']
+      }
     };
 
     users.push(user);
-    saveUsers(users);          // сохраняем всех пользователей [web:58]
-    setCurrentUser(user);      // делаем текущим
+    saveUsers(users); // [web:233][web:236]
+    setCurrentUser(user);
     applyUserToUI();
     renderRating();
-    authOverlay.hidden = true; // закрываем модалку
+    fillProfileInputsFromUser();
+    authOverlay.hidden = true;
   } else {
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -567,11 +740,11 @@ authForm.addEventListener('submit', e => {
     setCurrentUser(user);
     applyUserToUI();
     renderRating();
-    authOverlay.hidden = true; // закрываем модалку
+    fillProfileInputsFromUser();
+    authOverlay.hidden = true;
   }
 });
 
-// выход
 btnLogout.addEventListener('click', () => {
   setCurrentUser(null);
   applyUserToUI();
@@ -579,10 +752,12 @@ btnLogout.addEventListener('click', () => {
   authOverlay.hidden = true;
 });
 
-// ==== Профиль друга ====
+// ==== Профиль друга (список + страницы) ====
 const friendNicknameInput = document.getElementById('friendNicknameInput');
 const btnAddFriend = document.getElementById('btnAddFriend');
 const friendProfile = document.getElementById('friendProfile');
+const friendsListEl = document.getElementById('friendsList');
+const friendPageContent = document.getElementById('friendPageContent');
 
 function renderFriendProfile() {
   if (!friendProfile) return;
@@ -597,6 +772,136 @@ function renderFriendProfile() {
     (friend.pet ? '<br/>Питомец: ' + friend.pet : '') +
     (friend.favMovies ? '<br/>Любимые фильмы: ' + friend.favMovies : '') +
     (friend.favArtist ? '<br/>Музыка: ' + friend.favArtist : '');
+}
+
+function renderFriendsList() {
+  if (!friendsListEl) return;
+  const user = getCurrentUser();
+  friendsListEl.innerHTML = '';
+  if (!user || !user.friends || user.friends.length === 0) {
+    friendsListEl.innerHTML = '<li style="background:none;padding:0;">Пока нет друзей.</li>';
+    return;
+  }
+
+  user.friends.forEach(nick => {
+    const li = document.createElement('li');
+    li.textContent = nick;
+    li.addEventListener('click', () => {
+      openFriendPage(nick);
+    });
+    friendsListEl.appendChild(li);
+  });
+}
+
+function renderFriendFullPage() {
+  if (!friendPageContent) return;
+  const friend = getCurrentFriend();
+  if (!friend) {
+    friendPageContent.textContent = 'Выбери друга в списке на главной странице.';
+    return;
+  }
+
+  let profileHtml = `
+    <div>
+      <strong>${friend.username || friend.nickname}</strong><br/>
+      Ник: ${friend.nickname || '-'}
+      ${friend.pet ? '<br/>Питомец: ' + friend.pet : ''}
+      ${friend.favMovies ? '<br/>Любимые фильмы: ' + friend.favMovies : ''}
+      ${friend.favArtist ? '<br/>Музыка: ' + friend.favArtist : ''}
+    </div>
+  `;
+
+  if (friend.cover) {
+    profileHtml += `
+      <div style="margin-top:10px;">
+        <div style="
+          border-radius:16px;
+          min-height:120px;
+          background-image:url('${friend.cover}');
+          background-size:cover;
+          background-position:center;
+        "></div>
+      </div>
+    `;
+  }
+
+  if (friend.profile && friend.profile.background) {
+    profileHtml += `
+      <div style="margin-top:10px;">
+        <div style="
+          border-radius:16px;
+          min-height:120px;
+          background-image:url('${friend.profile.background}');
+          background-size:cover;
+          background-position:center;
+          position:relative;
+          overflow:hidden;
+        ">
+    `;
+    if (friend.profile.photo) {
+      profileHtml += `
+        <div style="
+          width:72px;
+          height:72px;
+          border-radius:16px;
+          background:#ffffffaa;
+          overflow:hidden;
+          margin:10px;
+        ">
+          <img src="${friend.profile.photo}" style="width:100%;height:100%;object-fit:cover;">
+        </div>
+      `;
+    }
+    if (Array.isArray(friend.profile.stickers)) {
+      friend.profile.stickers.forEach((url, i) => {
+        if (!url) return;
+        const pos = [
+          'top:10px;right:10px;',
+          'bottom:10px;left:20px;',
+          'bottom:10px;right:20px;'
+        ][i] || 'top:10px;left:10px;';
+        profileHtml += `
+          <div style="
+            position:absolute;
+            ${pos}
+            width:60px;
+            height:60px;
+            border-radius:14px;
+            background:#ffe4f3aa;
+            overflow:hidden;
+          ">
+            <img src="${url}" style="width:100%;height:100%;object-fit:contain;">
+          </div>
+        `;
+      });
+    }
+    profileHtml += '</div></div>';
+  }
+
+  friendPageContent.innerHTML = profileHtml;
+}
+
+function openFriendPage(nick) {
+  const users = loadUsers();
+  const friend = users.find(u => u.nickname === nick);
+  if (!friend) {
+    alert('Пользователь не найден.');
+    return;
+  }
+
+  setCurrentFriend({
+    username: friend.username,
+    nickname: friend.nickname,
+    pet: friend.pet,
+    favMovies: friend.favMovies,
+    favArtist: friend.favArtist,
+    cover: friend.cover,
+    profile: friend.profile || null
+  });
+
+  renderFriendProfile();
+  renderFriendFullPage();
+  showView('friend');
 }
 
 if (btnAddFriend) {
@@ -616,10 +921,11 @@ if (btnAddFriend) {
       nickname: friend.nickname,
       pet: friend.pet,
       favMovies: friend.favMovies,
-      favArtist: friend.favArtist
+      favArtist: friend.favArtist,
+      cover: friend.cover,
+      profile: friend.profile || null
     });
 
-    // Добавляем в список друзей текущего пользователя
     const current = getCurrentUser();
     if (current) {
       current.friends = current.friends || [];
@@ -636,7 +942,11 @@ if (btnAddFriend) {
     }
 
     renderFriendProfile();
+    renderFriendsList();
+    renderFriendFullPage();
   });
 }
 
 renderFriendProfile();
+renderFriendsList();
+renderFriendFullPage();
