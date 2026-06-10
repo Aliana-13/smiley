@@ -48,6 +48,7 @@
           </div>
           <input id="regFavArtist" placeholder="Любимый исполнитель" />
           <input id="regFavMovies" placeholder="Любимые фильмы/киновселенные" />
+          <input id="regHobby" placeholder="Твоё главное хобби" />
           <input id="regCover" placeholder="URL обложки профиля (по желанию)" />
         </div>
 
@@ -87,6 +88,7 @@
         <button data-view="my-profile">Мой профиль</button>
         <button data-view="games">Игровая страница</button>
         <button data-view="friend">Профиль друга</button>
+        <button data-view="add-friend">Добавить друга</button>
       </nav>
 
       <div style="margin-top:auto">
@@ -132,6 +134,29 @@
           <div style="display:flex;gap:8px;margin-top:8px;">
             <input id="coverInput" placeholder="URL картинки..." style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
             <button class="big-btn" id="btnSaveCover">Сохранить</button>
+          </div>
+        </div>
+
+        <!-- Любимые вещи -->
+        <div class="card" id="favoritesCard">
+          <h3>Мои любимые вещи</h3>
+          <p class="muted">Исполнитель, еда и фильм/киновселенная из твоего профиля.</p>
+          <div class="favorites-grid">
+            <div class="favorite-item">
+              <div class="favorite-label">Исполнитель</div>
+              <div class="favorite-image" id="favArtistImage">+</div>
+              <div class="favorite-text" id="favArtistText">Пока не выбран</div>
+            </div>
+            <div class="favorite-item">
+              <div class="favorite-label">Еда</div>
+              <div class="favorite-image" id="favFoodImage">+</div>
+              <div class="favorite-text" id="favFoodText">Пока не выбрана</div>
+            </div>
+            <div class="favorite-item">
+              <div class="favorite-label">Фильм / киновселенная</div>
+              <div class="favorite-image" id="favMovieImage">+</div>
+              <div class="favorite-text" id="favMovieText">Пока не выбрана</div>
+            </div>
           </div>
         </div>
 
@@ -218,7 +243,7 @@
       <div class="view" id="view-my-profile" style="display:none;">
         <div class="card" id="profilePage">
           <h3>Мой профиль</h3>
-          <p class="muted">Настрой фон, фото и стикеры. (Сохраняется в этом браузере.)</p>
+          <p class="muted">Настрой фон, фото, стикеры и свой конструктор. Всё сохраняется в этом браузере.</p>
 
           <div class="profile-page-layout">
             <div class="profile-page-preview">
@@ -229,25 +254,69 @@
                   <div class="sticker-slot" id="stickerSlot2">Стикер 2</div>
                   <div class="sticker-slot" id="stickerSlot3">Стикер 3</div>
                 </div>
+                <!-- слой виджетов конструктора -->
+                <div id="profileWidgetsLayer"></div>
               </div>
             </div>
 
             <div class="profile-page-controls">
-              <label class="muted">Фон профиля (URL картинки):</label>
-              <input id="profileBgInput" placeholder="https://..." />
+              <label class="muted">Фон профиля:</label>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <input id="profileBgInput" placeholder="URL фона..." style="flex:1;" />
+                <input type="file" id="profileBgFile" accept="image/*" />
+              </div>
 
-              <label class="muted" style="margin-top:8px;">Главное фото (URL):</label>
-              <input id="profilePhotoInput" placeholder="https://..." />
+              <label class="muted" style="margin-top:8px;">Главное фото:</label>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <input id="profilePhotoInput" placeholder="URL фото..." style="flex:1;" />
+                <input type="file" id="profilePhotoFile" accept="image/*" />
+              </div>
 
-              <label class="muted" style="margin-top:8px;">Стикеры (URL):</label>
-              <input id="stickerInput1" placeholder="Стикер 1" />
-              <input id="stickerInput2" placeholder="Стикер 2" />
-              <input id="stickerInput3" placeholder="Стикер 3" />
+              <label class="muted" style="margin-top:8px;">Стикеры:</label>
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <input id="stickerInput1" placeholder="URL стикера 1" style="flex:1;" />
+                  <input type="file" id="stickerFile1" accept="image/*" />
+                </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <input id="stickerInput2" placeholder="URL стикера 2" style="flex:1;" />
+                  <input type="file" id="stickerFile2" accept="image/*" />
+                </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <input id="stickerInput3" placeholder="URL стикера 3" style="flex:1;" />
+                  <input type="file" id="stickerFile3" accept="image/*" />
+                </div>
+              </div>
 
               <button class="big-btn" id="btnSaveProfile" style="margin-top:10px;">
                 Сохранить профиль
               </button>
+
+              <hr style="margin:12px 0;border:none;border-top:1px solid rgba(0,0,0,0.06);" />
+              <p class="muted">Конструктор профиля: добавляй и перетаскивай элементы.</p>
+              <button class="pill" id="btnAddWidget">Добавить элемент</button>
+              <small class="muted">Подпись к элементу редактируй ниже.</small>
+              <div id="widgetsList" style="margin-top:6px;font-size:12px;"></div>
             </div>
+          </div>
+
+          <!-- Питомец -->
+          <div class="card" style="margin-top:10px;">
+            <h3>Мой питомец</h3>
+            <p class="muted">Ухаживай за питомцем: корми, играй и укладывай спать.</p>
+            <div class="pet-panel">
+              <div class="pet-avatar" id="petAvatar">🐾</div>
+              <div class="pet-stats">
+                <div>Счастье: <span id="petHappiness">50</span>/100</div>
+                <div>Энергия: <span id="petEnergy">50</span>/100</div>
+              </div>
+            </div>
+            <div class="pet-actions">
+              <button class="pill" id="btnPetFeed">Кормить</button>
+              <button class="pill" id="btnPetPlay">Играть</button>
+              <button class="pill" id="btnPetSleep">Уложить спать</button>
+            </div>
+            <div class="muted" id="petMessage" style="margin-top:6px;"></div>
           </div>
         </div>
       </div>
@@ -277,6 +346,28 @@
           <h3>Профиль друга</h3>
           <div id="friendPageContent" class="muted">
             Выбери друга в списке на главной странице.
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: Добавить друга -->
+      <div class="view" id="view-add-friend" style="display:none;">
+        <div class="card">
+          <h3>Найти друга по интересам</h3>
+          <p class="muted">
+            Введи хобби, киновселенную или исполнителя, мы покажем пользователей с такими же интересами.
+          </p>
+
+          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+            <input id="filterHobby" placeholder="Хобби (например, рисование)" style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+            <input id="filterUniverse" placeholder="Киновселенная (например, Marvel)" style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+            <input id="filterArtist" placeholder="Исполнитель (например, Taylor Swift)" style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+          </div>
+
+          <button class="big-btn" id="btnSearchFriends" style="margin-top:8px;">Найти друзей</button>
+
+          <div id="addFriendResults" style="margin-top:10px;" class="muted">
+            Здесь появятся подходящие пользователи.
           </div>
         </div>
       </div>
