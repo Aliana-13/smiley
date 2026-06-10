@@ -69,7 +69,9 @@ function ensureUserProfile(user) {
     user.profile = {
       background: '',
       photo: '',
-      stickers: ['', '', '']
+      stickers: ['', '', ''],
+      widgets: [],
+      pet: { happiness: 50, energy: 50 }
     };
   } else {
     if (!Array.isArray(user.profile.stickers)) {
@@ -78,6 +80,12 @@ function ensureUserProfile(user) {
       while (user.profile.stickers.length < 3) {
         user.profile.stickers.push('');
       }
+    }
+    if (!Array.isArray(user.profile.widgets)) {
+      user.profile.widgets = [];
+    }
+    if (!user.profile.pet) {
+      user.profile.pet = { happiness: 50, energy: 50 };
     }
   }
 }
@@ -125,6 +133,62 @@ function applyProfileToUI() {
       slot.textContent = 'Стикер ' + (i + 1);
     }
   });
+
+  renderProfileWidgets();
+}
+
+function applyFavoritesToUI() {
+  const user = getCurrentUser();
+  const artistText = document.getElementById('favArtistText');
+  const foodText = document.getElementById('favFoodText');
+  const movieText = document.getElementById('favMovieText');
+  const artistImage = document.getElementById('favArtistImage');
+  const foodImage = document.getElementById('favFoodImage');
+  const movieImage = document.getElementById('favMovieImage');
+
+  if (!artistText || !foodText || !movieText) return;
+
+  if (!user) {
+    artistText.textContent = 'Пока не выбран';
+    foodText.textContent = 'Пока не выбрана';
+    movieText.textContent = 'Пока не выбрана';
+    if (artistImage) artistImage.innerHTML = '+';
+    if (foodImage) foodImage.innerHTML = '+';
+    if (movieImage) movieImage.innerHTML = '+';
+    return;
+  }
+
+  artistText.textContent = user.favArtist || 'Пока не выбран';
+  foodText.textContent = user.favFood || 'Пока не выбрана';
+  movieText.textContent = user.favMovies || 'Пока не выбрана';
+
+  // Пока используем обложку как картинку для всех трёх
+  const imgHtml = user.cover
+    ? '<img src="' + user.cover + '" alt="favorite" />'
+    : '+';
+  if (artistImage) artistImage.innerHTML = imgHtml;
+  if (foodImage) foodImage.innerHTML = imgHtml;
+  if (movieImage) movieImage.innerHTML = imgHtml;
+}
+
+function applyPetToUI() {
+  const user = getCurrentUser();
+  const petHappinessEl = document.getElementById('petHappiness');
+  const petEnergyEl = document.getElementById('petEnergy');
+  const petMessageEl = document.getElementById('petMessage');
+
+  if (!petHappinessEl || !petEnergyEl || !petMessageEl) return;
+
+  if (!user || !user.profile || !user.profile.pet) {
+    petHappinessEl.textContent = '—';
+    petEnergyEl.textContent = '—';
+    petMessageEl.textContent = 'Авторизуйся, чтобы ухаживать за питомцем.';
+    return;
+  }
+
+  petHappinessEl.textContent = user.profile.pet.happiness;
+  petEnergyEl.textContent = user.profile.pet.energy;
+  petMessageEl.textContent = 'Питомец ждёт твоего внимания!';
 }
 
 function applyUserToUI() {
@@ -147,6 +211,8 @@ function applyUserToUI() {
       coverPreview.textContent = 'Картинка пока не выбрана';
     }
     applyProfileToUI();
+    applyFavoritesToUI();
+    applyPetToUI();
     return;
   }
 
@@ -162,6 +228,7 @@ function applyUserToUI() {
 
   const badges = [];
   if (user.nickname) badges.push('ник: ' + user.nickname);
+  if (user.hobby) badges.push('хобби: ' + user.hobby);
   if (user.favDrink) badges.push('напиток: ' + user.favDrink);
   if (user.favFood) badges.push('еда: ' + user.favFood);
   if (user.favArtist) badges.push('музыка: ' + user.favArtist);
@@ -190,6 +257,8 @@ function applyUserToUI() {
   }
 
   applyProfileToUI();
+  applyFavoritesToUI();
+  applyPetToUI();
 }
 
 // init
@@ -201,7 +270,8 @@ const views = {
   home: document.getElementById('view-home'),
   'my-profile': document.getElementById('view-my-profile'),
   games: document.getElementById('view-games'),
-  friend: document.getElementById('view-friend')
+  friend: document.getElementById('view-friend'),
+  'add-friend': document.getElementById('view-add-friend')
 };
 
 function showView(name) {
@@ -556,13 +626,78 @@ if (btnSaveCover) {
   });
 }
 
-// ==== Страница профиля (inputs) ====
+// ==== Страница профиля (inputs + файлы) ====
 const profileBgInput = document.getElementById('profileBgInput');
 const profilePhotoInput = document.getElementById('profilePhotoInput');
 const stickerInput1 = document.getElementById('stickerInput1');
 const stickerInput2 = document.getElementById('stickerInput2');
 const stickerInput3 = document.getElementById('stickerInput3');
+const profileBgFile = document.getElementById('profileBgFile');
+const profilePhotoFile = document.getElementById('profilePhotoFile');
+const stickerFile1 = document.getElementById('stickerFile1');
+const stickerFile2 = document.getElementById('stickerFile2');
+const stickerFile3 = document.getElementById('stickerFile3');
 const btnSaveProfile = document.getElementById('btnSaveProfile');
+
+function fileToDataUrl(file, cb) {
+  const reader = new FileReader();
+  reader.onload = e => cb(e.target.result);
+  reader.readAsDataURL(file);
+}
+
+function applyProfilePreviewFromInputs() {
+  const user = getCurrentUser();
+  if (!user) return;
+  ensureUserProfile(user);
+  user.profile.background = profileBgInput.value.trim();
+  user.profile.photo = profilePhotoInput.value.trim();
+  user.profile.stickers = [
+    stickerInput1.value.trim(),
+    stickerInput2.value.trim(),
+    stickerInput3.value.trim()
+  ];
+  applyProfileToUI();
+}
+
+if (profileBgFile) {
+  profileBgFile.addEventListener('change', () => {
+    const file = profileBgFile.files[0];
+    if (!file) return;
+    fileToDataUrl(file, url => {
+      profileBgInput.value = url;
+      applyProfilePreviewFromInputs();
+    });
+  });
+}
+
+if (profilePhotoFile) {
+  profilePhotoFile.addEventListener('change', () => {
+    const file = profilePhotoFile.files[0];
+    if (!file) return;
+    fileToDataUrl(file, url => {
+      profilePhotoInput.value = url;
+      applyProfilePreviewFromInputs();
+    });
+  });
+}
+
+function handleStickerFile(fileInput, urlInput) {
+  const file = fileInput.files[0];
+  if (!file) return;
+  fileToDataUrl(file, url => {
+    urlInput.value = url;
+    applyProfilePreviewFromInputs();
+  });
+}
+
+if (stickerFile1) stickerFile1.addEventListener('change', () => handleStickerFile(stickerFile1, stickerInput1));
+if (stickerFile2) stickerFile2.addEventListener('change', () => handleStickerFile(stickerFile2, stickerInput2));
+if (stickerFile3) stickerFile3.addEventListener('change', () => handleStickerFile(stickerFile3, stickerInput3));
+
+[profileBgInput, profilePhotoInput, stickerInput1, stickerInput2, stickerInput3].forEach(el => {
+  if (!el) return;
+  el.addEventListener('input', applyProfilePreviewFromInputs);
+});
 
 if (btnSaveProfile) {
   btnSaveProfile.addEventListener('click', () => {
@@ -606,6 +741,199 @@ function fillProfileInputsFromUser() {
 }
 
 fillProfileInputsFromUser();
+
+// ==== Конструктор профиля (виджеты) ====
+const profileWidgetsLayer = document.getElementById('profileWidgetsLayer');
+const btnAddWidget = document.getElementById('btnAddWidget');
+const widgetsList = document.getElementById('widgetsList');
+
+function saveProfileUser(user) {
+  const users = loadUsers();
+  const idx = users.findIndex(u => u.username === user.username);
+  if (idx !== -1) {
+    users[idx] = user;
+    saveUsers(users);
+  }
+  setCurrentUser(user);
+}
+
+function renderProfileWidgets() {
+  if (!profileWidgetsLayer || !widgetsList) return;
+  const user = getCurrentUser();
+  profileWidgetsLayer.innerHTML = '';
+  widgetsList.innerHTML = '';
+
+  if (!user) return;
+  ensureUserProfile(user);
+
+  user.profile.widgets.forEach((w, index) => {
+    const el = document.createElement('div');
+    el.className = 'profile-widget';
+    el.style.left = (w.x || 20) + 'px';
+    el.style.top = (w.y || 20) + 'px';
+    el.dataset.index = index;
+
+    el.innerHTML = `
+      <img src="${w.url}" alt="">
+      <div class="profile-widget-caption">${w.caption || ''}</div>
+    `;
+
+    profileWidgetsLayer.appendChild(el);
+
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '4px';
+    row.style.marginTop = '4px';
+
+    row.innerHTML = `
+      <span style="flex:0 0 auto;">#${index + 1}</span>
+      <input data-widget-caption="${index}" value="${w.caption || ''}" style="flex:1;padding:2px 4px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);font-size:11px;" />
+      <button class="pill" data-widget-del="${index}" style="font-size:10px;padding:3px 6px;">×</button>
+    `;
+    widgetsList.appendChild(row);
+  });
+
+  widgetsList.querySelectorAll('input[data-widget-caption]').forEach(input => {
+    input.addEventListener('input', () => {
+      const idx = Number(input.dataset.widgetCaption);
+      const user = getCurrentUser();
+      if (!user || !user.profile.widgets[idx]) return;
+      user.profile.widgets[idx].caption = input.value;
+      saveProfileUser(user);
+      renderProfileWidgets();
+    });
+  });
+
+  widgetsList.querySelectorAll('button[data-widget-del]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = Number(btn.dataset.widgetDel);
+      const user = getCurrentUser();
+      if (!user) return;
+      user.profile.widgets.splice(idx, 1);
+      saveProfileUser(user);
+      renderProfileWidgets();
+    });
+  });
+
+  initWidgetsDrag();
+}
+
+function initWidgetsDrag() {
+  const user = getCurrentUser();
+  if (!user) return;
+  ensureUserProfile(user);
+
+  let dragging = null;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  profileWidgetsLayer.querySelectorAll('.profile-widget').forEach(el => {
+    el.addEventListener('mousedown', e => {
+      dragging = el;
+      const rect = el.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+    });
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const containerRect = profileWidgetsLayer.getBoundingClientRect();
+    let x = e.clientX - containerRect.left - offsetX;
+    let y = e.clientY - containerRect.top - offsetY;
+    dragging.style.left = x + 'px';
+    dragging.style.top = y + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    const index = Number(dragging.dataset.index);
+    const user = getCurrentUser();
+    if (user && user.profile.widgets[index]) {
+      const containerRect = profileWidgetsLayer.getBoundingClientRect();
+      const rect = dragging.getBoundingClientRect();
+      user.profile.widgets[index].x = rect.left - containerRect.left;
+      user.profile.widgets[index].y = rect.top - containerRect.top;
+      saveProfileUser(user);
+    }
+    dragging = null;
+  });
+}
+
+if (btnAddWidget) {
+  btnAddWidget.addEventListener('click', () => {
+    const url = prompt('URL картинки элемента (можно взять из уже загруженных или любого URL):');
+    if (!url) return;
+    const user = getCurrentUser();
+    if (!user) {
+      alert('Сначала войди.');
+      return;
+    }
+    ensureUserProfile(user);
+    user.profile.widgets.push({
+      id: Date.now(),
+      url,
+      caption: ''
+    });
+    saveProfileUser(user);
+    renderProfileWidgets();
+  });
+}
+
+renderProfileWidgets();
+
+// ==== Питомец ====
+const petHappinessEl = document.getElementById('petHappiness');
+const petEnergyEl = document.getElementById('petEnergy');
+const petMessageEl = document.getElementById('petMessage');
+const btnPetFeed = document.getElementById('btnPetFeed');
+const btnPetPlay = document.getElementById('btnPetPlay');
+const btnPetSleep = document.getElementById('btnPetSleep');
+
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
+
+function updatePet(deltaHappy, deltaEnergy, message) {
+  const user = getCurrentUser();
+  if (!user) {
+    alert('Сначала войди.');
+    return;
+  }
+  ensureUserProfile(user);
+  user.profile.pet.happiness = clamp(
+    (user.profile.pet.happiness || 50) + deltaHappy,
+    0,
+    100
+  );
+  user.profile.pet.energy = clamp(
+    (user.profile.pet.energy || 50) + deltaEnergy,
+    0,
+    100
+  );
+  saveProfileUser(user);
+  applyPetToUI();
+  if (petMessageEl) petMessageEl.textContent = message;
+}
+
+if (btnPetFeed) {
+  btnPetFeed.addEventListener('click', () => {
+    updatePet(+5, +15, 'Ты покормил питомца. Он сытый и доволен!');
+  });
+}
+
+if (btnPetPlay) {
+  btnPetPlay.addEventListener('click', () => {
+    updatePet(+10, -10, 'Вы поиграли! Питомец счастлив, но немного устал.');
+  });
+}
+
+if (btnPetSleep) {
+  btnPetSleep.addEventListener('click', () => {
+    updatePet(+2, +20, 'Питомец поспал и восстановил энергию.');
+  });
+}
 
 // ==== Авторизация / модалка ====
 const authOverlay = document.getElementById('authOverlay');
@@ -705,17 +1033,20 @@ authForm.addEventListener('submit', e => {
       favFood: document.getElementById('regFavFood').value.trim(),
       favArtist: document.getElementById('regFavArtist').value.trim(),
       favMovies: document.getElementById('regFavMovies').value.trim(),
+      hobby: document.getElementById('regHobby').value.trim(),
       cover: document.getElementById('regCover').value.trim(),
       friends: [],
       profile: {
         background: '',
         photo: '',
-        stickers: ['', '', '']
+        stickers: ['', '', ''],
+        widgets: [],
+        pet: { happiness: 50, energy: 50 }
       }
     };
 
     users.push(user);
-    saveUsers(users); // [web:233][web:236]
+    saveUsers(users); // [web:260][web:233]
     setCurrentUser(user);
     applyUserToUI();
     renderRating();
@@ -904,49 +1235,114 @@ function openFriendPage(nick) {
   showView('friend');
 }
 
+function addFriendByNickname(nick) {
+  const users = loadUsers();
+  const friend = users.find(u => u.nickname === nick);
+  if (!friend) {
+    alert('Пользователь с таким ником не найден.');
+    return;
+  }
+
+  setCurrentFriend({
+    username: friend.username,
+    nickname: friend.nickname,
+    pet: friend.pet,
+    favMovies: friend.favMovies,
+    favArtist: friend.favArtist,
+    cover: friend.cover,
+    profile: friend.profile || null
+  });
+
+  const current = getCurrentUser();
+  if (current) {
+    current.friends = current.friends || [];
+    if (!current.friends.includes(friend.nickname)) {
+      current.friends.push(friend.nickname);
+      const usersAll = loadUsers();
+      const idx = usersAll.findIndex(u => u.username === current.username);
+      if (idx !== -1) {
+        usersAll[idx] = current;
+        saveUsers(usersAll);
+      }
+      setCurrentUser(current);
+    }
+  }
+
+  renderFriendProfile();
+  renderFriendsList();
+  renderFriendFullPage();
+}
+
 if (btnAddFriend) {
   btnAddFriend.addEventListener('click', () => {
     const nick = friendNicknameInput.value.trim();
     if (!nick) return;
-
-    const users = loadUsers();
-    const friend = users.find(u => u.nickname === nick);
-    if (!friend) {
-      alert('Пользователь с таким ником не найден.');
-      return;
-    }
-
-    setCurrentFriend({
-      username: friend.username,
-      nickname: friend.nickname,
-      pet: friend.pet,
-      favMovies: friend.favMovies,
-      favArtist: friend.favArtist,
-      cover: friend.cover,
-      profile: friend.profile || null
-    });
-
-    const current = getCurrentUser();
-    if (current) {
-      current.friends = current.friends || [];
-      if (!current.friends.includes(friend.nickname)) {
-        current.friends.push(friend.nickname);
-        const usersAll = loadUsers();
-        const idx = usersAll.findIndex(u => u.username === current.username);
-        if (idx !== -1) {
-          usersAll[idx] = current;
-          saveUsers(usersAll);
-        }
-        setCurrentUser(current);
-      }
-    }
-
-    renderFriendProfile();
-    renderFriendsList();
-    renderFriendFullPage();
+    addFriendByNickname(nick);
   });
 }
 
 renderFriendProfile();
 renderFriendsList();
 renderFriendFullPage();
+
+// ==== Добавить друга по интересам ====
+const filterHobby = document.getElementById('filterHobby');
+const filterUniverse = document.getElementById('filterUniverse');
+const filterArtist = document.getElementById('filterArtist');
+const btnSearchFriends = document.getElementById('btnSearchFriends');
+const addFriendResults = document.getElementById('addFriendResults');
+
+if (btnSearchFriends) {
+  btnSearchFriends.addEventListener('click', () => {
+    const user = getCurrentUser();
+    if (!user) {
+      alert('Сначала войди, чтобы искать друзей.');
+      return;
+    }
+
+    const hobby = filterHobby.value.trim().toLowerCase();
+    const universe = filterUniverse.value.trim().toLowerCase();
+    const artist = filterArtist.value.trim().toLowerCase();
+
+    const users = loadUsers();
+    const found = users.filter(u => {
+      if (u.username === user.username) return false;
+
+      let ok = false;
+
+      if (hobby && u.hobby && u.hobby.toLowerCase().includes(hobby)) ok = true;
+      if (universe && u.favMovies && u.favMovies.toLowerCase().includes(universe)) ok = true;
+      if (artist && u.favArtist && u.favArtist.toLowerCase().includes(artist)) ok = true;
+
+      return ok;
+    });
+
+    if (!found.length) {
+      addFriendResults.textContent = 'Никого не нашли. Попробуй другие ключевые слова.';
+      return;
+    }
+
+    addFriendResults.innerHTML = '';
+    found.forEach(friend => {
+      const div = document.createElement('div');
+      div.style.padding = '6px 0';
+      div.style.borderTop = '1px solid rgba(0,0,0,0.04)';
+      div.innerHTML = `
+        <strong>${friend.username}</strong> (${friend.nickname})<br/>
+        ${friend.hobby ? 'Хобби: ' + friend.hobby + '<br/>' : ''}
+        ${friend.favMovies ? 'Фильмы: ' + friend.favMovies + '<br/>' : ''}
+        ${friend.favArtist ? 'Музыка: ' + friend.favArtist : ''}
+        <br/>
+        <button class="pill" data-nick="${friend.nickname}">Добавить в друзья</button>
+      `;
+      addFriendResults.appendChild(div);
+    });
+
+    addFriendResults.querySelectorAll('button[data-nick]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const nick = btn.dataset.nick;
+        addFriendByNickname(nick);
+      });
+    });
+  });
+}
